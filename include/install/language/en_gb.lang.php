@@ -10,7 +10,6 @@
 
 $optionalModuleStrings = array(
 	'CustomerPortal_description'=>'Management interface to control the behavior of Customer Portal Plugin',
-	'FieldFormulas_description'=>'Setup rules for custom fields to update value on record save',
 	'RecycleBin_description'=>'Module to manage deleted records, provides ability to restore or remove it completely',
 	'Tooltip_description'=>'Configure tooltip to be shown for a field, which can be a combination of other fields',
 	'Webforms_description'=>'Server side support to allow building client webforms to capture information easily',
@@ -39,7 +38,6 @@ $installationStrings = array(
 	'LBL_INSTALL' => 'Install',
 	'LBL_MIGRATE' => 'Migrate',
 	'ERR_RESTRICTED_FILE_ACCESS' => 'Sorry! Attempt to access restricted file',
-	'LBL_INSTALLATION_CHECK' => 'Installation Check',
 	'LBL_BACK' => 'Back',
 	'LBL_NEXT' => 'Next',
 	'LBL_AGREE' => 'Agree',
@@ -69,7 +67,6 @@ $installationStrings = array(
 	'LBL_GD_LIBRARY' => 'GD graphics library',
 	'LBL_RECOMMENDED_PHP_SETTINGS' => 'Recommended PHP Settings',
 	'LBL_DIRECTIVE' => 'Directive',
-	'LBL_RECOMMENDED' => 'Recommended',
 	'LBL_PHP_INI_VALUE' => 'PHP.ini value',
 	'LBL_READ_WRITE_ACCESS' => 'Read/Write Access',
 	'LBL_NOT_RECOMMENDED' => 'Not Recommended',

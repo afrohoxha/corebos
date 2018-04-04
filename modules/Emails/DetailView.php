@@ -12,13 +12,13 @@ require_once('data/Tracker.php');
 require_once('include/upload_file.php');
 require_once('include/utils/utils.php');
 
-global $log, $app_strings, $mod_strings, $currentModule, $theme;
+global $log, $app_strings, $mod_strings, $currentModule, $theme, $default_charset;
 
 $focus = CRMEntity::getInstance($currentModule);
 
 $smarty = new vtigerCRM_Smarty;
 if(isset($_REQUEST['record'])) {
-	global $adb,$default_charset;
+	global $adb;
 	$focus->retrieve_entity_info($_REQUEST['record'],"Emails");
 	$log->info("Entity info successfully retrieved for DetailView.");
 	$focus->id = $_REQUEST['record'];
@@ -85,12 +85,9 @@ if (isset($_REQUEST['filename']) && is_null($focus->filename)) {
 	$focus->filename = $_REQUEST['filename'];
 }
 
-$submenu = array('LBL_EMAILS_TITLE'=>'index.php?module=Emails&action=index','LBL_WEBMAILS_TITLE'=>'index.php?module=squirrelmail-1.4.4&action=redirect');
-$sec_arr = array('index.php?module=Emails&action=index'=>'Emails','index.php?module=squirrelmail-1.4.4&action=redirect'=>'Emails');
-
 $smarty->assign("MOD", $mod_strings);
 $smarty->assign("APP", $app_strings);
-
+$smarty->assign('LBL_CHARSET', $default_charset);
 $smarty->assign("UPDATEINFO",updateInfo($focus->id));
 if (isset($_REQUEST['return_module'])) $smarty->assign("RETURN_MODULE", vtlib_purify($_REQUEST['return_module']));
 if (isset($_REQUEST['return_action'])) $smarty->assign("RETURN_ACTION", vtlib_purify($_REQUEST['return_action']));
@@ -104,7 +101,6 @@ if (isset($focus->name)) $smarty->assign("NAME", $focus->name);
 	else $smarty->assign("NAME", "");
 
 $entries = getBlocks($currentModule,"detail_view",'',$focus->column_fields);
-//$entries[$mod_strings['LBL_EMAIL_INFORMATION']]['5'][$mod_strings['Description']]['value'] = from_html($entries[$mod_strings['LBL_EMAIL_INFORMATION']]['5'][$mod_strings['Description']]['value']);
 //changed this to view description in all langauge - bharath
 $smarty->assign("BLOCKS",$entries[$mod_strings['LBL_EMAIL_INFORMATION']]);
 $smarty->assign("SINGLE_MOD", 'Email');
@@ -120,9 +116,8 @@ $check_button = Button_Check($module);
 $smarty->assign("CHECK", $check_button);
 
 $smarty->assign("MODULE",$currentModule);
-
-if(empty($_REQUEST['mode']) or $_REQUEST['mode'] != 'ajax')
-	$smarty->display("EmailDetailView.tpl");
-else
-	$smarty->display("EmailDetails.tpl")
+if ($_REQUEST['module']=='cbCalendar') {
+	$smarty->assign('FROMCALENDAR', 'true');
+}
+$smarty->display('EmailDetailView.tpl');
 ?>

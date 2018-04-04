@@ -23,6 +23,7 @@ $app_strings = array (
       'LBL_SHOW' => 'Mostrar :',
       'today' => 'Hoy -',
       'all' => 'Todos',
+      'Generate Document'=>'Combinar Documento',
       'LBL_UPCOMING_EVENTS' => 'Eventos Programados',
       'LBL_PENDING_EVENTS' => 'Eventos Pendientes',
       'NTC_WELCOME_MESSAGE' => '¡Bienvenido a coreBOS!',
@@ -37,6 +38,7 @@ $app_strings = array (
       'LBL_SEND_MAIL_BUTTON' => 'Enviar un Email',
       'LBL_SAVE_BUTTON_TITLE' => 'Guardar [Alt+S]',
       'LBL_EDIT_BUTTON_TITLE' => 'Editar [Alt+E]',
+      'LBL_RECALCULATE_BUTTON_TITLE' => 'Recalcular [Alt+R]',
       'LBL_CONVERTSO_BUTTON_TITLE' => 'Crear Orden Venta',
       'LBL_CONVERTINVOICE_BUTTON_TITLE' => 'Crear Factura',
       'LBL_EDIT_BUTTON' => 'Editar',
@@ -70,6 +72,7 @@ $app_strings = array (
       'LBL_GENERATE' => 'Generar',
       'LBL_SAVE_BUTTON_KEY' => 'S',
       'LBL_EDIT_BUTTON_KEY' => 'E',
+      'LBL_RECALCULATE_BUTTON_KEY' => 'R',
       'LBL_CONVERTSO_BUTTON_KEY' => 'S',
       'LBL_CONVERTINVOICE_BUTTON_KEY' => 'I',
       'LBL_DUPLICATE_BUTTON_KEY' => 'U',
@@ -82,6 +85,7 @@ $app_strings = array (
       'LBL_SELECT_BUTTON_KEY' => 'T',
       'LBL_SAVE_BUTTON_LABEL' => 'Guardar',
       'LBL_EDIT_BUTTON_LABEL' => 'Editar',
+      'LBL_RECALCULATE_BUTTON' => 'Recalcular',
       'LBL_CONVERTSO_BUTTON_LABEL' => 'Crear Orden Venta',
       'LBL_CONVERTINVOICE_BUTTON_LABEL' => 'Crear Factura',
       'LBL_DUPLICATE_BUTTON_LABEL' => 'Duplicar',
@@ -212,11 +216,14 @@ $app_strings = array (
 	'Photo2Document' => 'Foto a Documento',
 	'Snap Photo' => 'Tomar Photo',
 	'Clear Photo' => 'Otra Photo',
-      'Export' => 'Exportar',
+	'DocumentCreatedRelated' => 'Documento añadido y relacionado',
+	'Export' => 'Exportar',
       'Import' => 'Importar',
       'Merge' => 'Combinar',
       'ConvertLead' => 'Convertir Pre-Contacto',
-      'LBL_SHOW_RESULTS' => 'Mostrar resultados en',
+	'Is Converted From Lead' => 'Convertido desde PreContacto',
+	'Converted From Lead' => 'Convertido del PreContacto',
+	'LBL_SHOW_RESULTS' => 'Mostrar resultados en',
       'LBL_TOTAL_RECORDS_FOUND' => 'Total Registros encontrados:',
       'LBL_SEARCH_RESULTS_FOR' => ' -- Buscar Resultados Para ',
       'LBL_TAG_SEARCH' => ' -- Búsqueda de Etiquetas para ',
@@ -241,7 +248,7 @@ $app_strings = array (
       'LBL_ENTITY_NAME' => 'Nombre de la Entidad',
       'LBL_GROUP_NAME' => 'Grupo',
       'LBL_ENTITY_TYPE' => 'Tipo',
-      'LBL_NEW_TICKET' => 'Código del Ticket',
+      'LBL_NEW_TICKET' => 'Código de la Incidencia',
       'LBL_TITLE' => 'Título',
       'LBL_PRIORITY' => 'Prioridad',
       'LBL_STATUS' => 'Estado',
@@ -359,7 +366,6 @@ $app_strings = array (
       'Amount' => 'Cantidad',
       'Expected Close' => 'Previsión de Cierre',
       'Subject' => 'Asunto',
-      'Contact Name' => 'Contacto',
       'Related to' => 'Relacionado con',
       'File' => 'Archivo',
       'Last Modified' => 'Última Modificación',
@@ -395,7 +401,6 @@ $app_strings = array (
       'Tasks' => 'Tareas',
       'Todo' => 'Tareas Pendientes',
       'Call' => 'Llamada',
-      'Meeting' => 'Reunión',
       'PriceBook' => 'Tarifas',
       'Calendar' => 'Tareas',
       'Home' => 'Portada',
@@ -409,7 +414,7 @@ $app_strings = array (
       'Portal' => 'Webs Favoritas',
       'Webmails' => 'Webmail',
       'Activity History' => 'Histórico de eventos',
-      'Ticket History' => 'Histórico de tickets',
+      'Ticket History' => 'Histórico de incidencias',
       'Purchase Order' => 'Ordenes de Compra',
       'Sales Stage History' => 'Histórico de ventas',
       'Users' => 'Usuarios',
@@ -418,7 +423,7 @@ $app_strings = array (
       'SalesOrder Status History' => 'Histórico de Ordenes de Venta',
       'Quote Stage History' => 'Histórico de Presupuestos',
       'Invoice Status History' => 'Histórico de Facturas',
-      'LBL_TROUBLE_TICKET' => 'Ticket de Problema',
+      'LBL_TROUBLE_TICKET' => 'Incidencia',
       'My Home Page' => 'Portada',
       'Marketing' => 'Marketing',
       'Sales' => 'Comercial',
@@ -428,7 +433,6 @@ $app_strings = array (
       'Tools' => 'Herramientas',
       'Settings' => 'Configuración',
       'LBL_INFORMATION' => 'Información',
-      'LBL_MORE' => 'Más',
       'LBL_BASIC' => 'Básico',
       'LBL_CREATING' => 'Creando',
       'LBL_DUPLICATING' => 'Duplicando',
@@ -458,7 +462,6 @@ $app_strings = array (
       'LBL_DISCUSS' => 'Comentar con otros usuarios',
       'Quote Stage' => 'Fase del Presupuesto',
       'Potential Name' => 'Oportunidad',
-      'Total' => 'Cantidad Total',
       'First Name' => 'Nombre',
       'Last Name' => 'Apellidos',
       'User Name' => 'Usuario',
@@ -472,10 +475,10 @@ $app_strings = array (
       'Quote No' => 'Nº Presupuesto',
       'Sales Order' => 'Orden de Venta',
       'COMBO_QUOTES' => 'Presupuestos',
-      'End Date' => 'Fecha de Vencimiento',
-      'End Date & Time' => 'Fecha y Hora de Vencimiento',
+      'End Date' => 'Fecha de Vencimiento (System Date)',
+      'End Date & Time' => 'Fecha y Hora de Vencimiento (System Date)',
       'Start Date' => 'Fecha de Inicio',
-      'Start Date & Time' => 'Fecha y Hora de Inicio',
+      'Start Date & Time' => 'Fecha y Hora de Inicio (System Date)',
       'Recurring Type' => 'Periodicidad',
       'SalesOrders' => 'Ordenes de Venta',
       'LBL_QUOTE_NAME' => 'Presupuesto',
@@ -513,6 +516,7 @@ $app_strings = array (
       'LBL_SALES_ORDER_ID' => 'Número de Orden de Venta',
       'LBL_PURCHASE_ORDER_ID' => 'Número Orden de Compra',
       'LBL_EXPORT_TO_PDF' => 'Exportar a PDF',
+	'DeletedProducts' => 'Este registro contiene productos/servicios que han sido eliminados. Por favor, edita y arreglalo según corresponda.',
       'LBL_HOME_KEY_METRICS' => 'Estadísticas',
       'LBL_HOME_METRICS' => 'Elemento',
       'LBL_HOME_COUNT' => 'Cantidad',
@@ -635,9 +639,9 @@ $app_strings = array (
       'LBL_RENAME_PROFILE' => 'Renombrar Perfil',
       'LBL_PROFILE_NAME' => 'Nombre de Perfil',
       'LBL_START_DATE' => 'Fecha de Inicio',
-      'LBL_START_DATE_TIME' => 'Fecha y Hora de Inicio',
-      'LBL_END_DATE' => 'Fecha de Vencimiento',
-      'LBL_END_DATE_TIME' => 'Fecha y Hora de Vencimiento',
+      'LBL_START_DATE_TIME' => 'Fecha y Hora de Inicio (System Date)',
+      'LBL_END_DATE' => 'Fecha de Vencimiento (System Date)',
+      'LBL_END_DATE_TIME' => 'Fecha y Hora de Vencimiento (System Date)',
       'LBL_CREATE_MERGE_TEMPLATE' => 'Crear plantillas de combinación de correo',
       'LBL_IMG_FORMATS' => '(Sólo imágenes jpg, gif, bmp y png )',
       'group' => 'Grupo',
@@ -838,7 +842,9 @@ $app_strings = array (
       'FOLDER_NAME_ALLOW_20CHARS' => 'El Nombre de la Carpeta admite un máximo de 20 Caracteres',
       'SPECIAL_CHARS_NOT_ALLOWED' => 'No se admiten caracteres especiales',
       'LBL_SIGN_IN' => 'Regístrese',
-      'LBL_ROOT' => 'Raiz',
+	'StartSession' => 'Iniciar Sesión',
+	'CapsLockActive' => 'Bloq Mayús está activado.',
+	'LBL_ROOT' => 'Raiz',
       'LBL_FIRST' => 'Primera',
       'LBL_LAST' => 'Última',
       'LBL_CONTACT_LAST_NAME' => 'Contacto - Apellido',
@@ -854,7 +860,6 @@ $app_strings = array (
       'Lead Status' => 'Estado de Pre-Contacto',
       'Lead Source' => 'Origen de Pre-Contacto',
       'Yahoo Id' => 'Yahoo Id',
-      'LBL_CHARSET' => 'UTF-8',
       'Lost Lead' => 'Pre-Contacto Perdido',
       'LBL_SEND_EMAIL_PDF' => 'Enviar Email con PDF',
       'ERR_INVALID_PAGE_COUNT' => 'Paginación Inválida',
@@ -904,7 +909,7 @@ $app_strings = array (
       'LBL_ONLY_SELECTED_RECORDS' => 'Export Registros seleccionados',
       'LBL_YES' => 'Si',
 		'Planned'=>'Planeado',
-		'Held'=>'Realizada',
+		'Held'=>'Mantenida',
 		'Not Held'=>'Pendiente',
 		'Completed'=>'Completado',
 		'Deferred'=>'Retrasado',
@@ -913,9 +918,7 @@ $app_strings = array (
 		'Pending Input'=>'Pendiente de datos',
 		'LBL_REMAINDER_DAY'=>'días',
 		'LBL_REMAINDER_HRS'=>'hrs',
-		'Call'=>'Llamada',
 		'Meeting'=>'Reunión',
-		
 		'High'=>'Alto',
 		'Medium'=>'Medio',
 		'Low'=>'Bajo',
@@ -989,7 +992,6 @@ $app_strings = array (
       'Billing Address'=>'Dirección Facturación',
       'Order Number'=>'Número Pedido',
       'Contact Name'=>'Nombre Contacto',
-      'Vendor Name'=>'Nombre Proveedor',
       'Issue Date'=>'Fecha Emisión',
       'Shipping Address'=>'Dirección Envío',
       'Page'=>'Página',
@@ -1006,13 +1008,9 @@ $app_strings = array (
       'Price'=>'Precio',
       'Discount'=>'Descuento',
       'LBL_ADD_BUTTON' => 'Añadir',
-      'Net Total' => 'Neto Total',
-      'Shipping & Handling Charges' => 'Gastos de Manipulación y Transporte',
-      'Shipping & Handling Tax:' => 'Impuestos de Manipulación y Transporte',
-      'Quantity'=>'Cantidad',
       'Grand Total : (in €)'=>'Total : (en €)',
 
-      'LBL_GENERAL_FIELDS'=>'Campos Generales', 
+      'LBL_GENERAL_FIELDS'=>'Campos Generales',
       //For Users fields
       'HomePhone'=>'Teléfono Casa',
       'Signature'=>'Firma',
@@ -1023,18 +1021,17 @@ $app_strings = array (
       //For General fields
       'Current Date'=>'Fecha Actual',
       'Current Time'=>'Hora Actual',
-      
+
       //Added for Role based Custom filters
       'LBL_PUBLIC'=>'Publico',
       'LBL_PENDING'=>'Pendiente',
       'LBL_OTHERS'=>'Otros',
-      
+
       //For Configuring/Using PurchaseOrder number
       'PO Number'=>'Nº Orden Compra',
       'MSG_AUTO_GEN_ON_SAVE'=>'GEN-AUTO AL GUARDAR',
-      
+
       //For Duplicate merging feature
-      'LBL_MERGE' => 'Combinar',
       'LBL_MERGE_BUTTON_TITLE' => 'Combinar',
       'LBL_SAVE_MERGE_BUTTON_TITLE' => 'Encontrar Duplicados',
       'LBL_SELECT_MERGECRITERIA_HEADER' => 'Selección Criterio Combinación',
@@ -1059,7 +1056,7 @@ $app_strings = array (
       'LBL_BACKEDUPSUCCESSFULLY_TO_FILE' => 'Copia seguridad a fichero correcta',//BACKUP
       'APP.LBL_NOW'=>'Ahora',//BACKUP
       'LBL_NOW'=>'Ahora',//BACKUP
-      
+
       // Multi-Currency Customization
       'LBL_MORE_CURRENCIES'=>'más monedas',
       'LBL_BASE_CURRENCY'=>'Moneda Base',
@@ -1070,7 +1067,7 @@ $app_strings = array (
       'LBL_RESET_PRICE'=>'Restaurar Precio',
       'LBL_RESET'=>'Restaurar',
       'LBL_UNIT_PRICE_NOT_PERMITTED'=>'Acceso al Precio Unitario no esta Permitido. No se puede seleccionar productos.',
-      
+
       // Documents module
       'SINGLE_Documents' => 'Documento',
       'LBL_NEW_NOTE' => 'Nuevo Documento',
@@ -1089,10 +1086,10 @@ $app_strings = array (
       // Mass Edit Feature
       'LBL_MASS_EDIT'=>'Edición Masiva',
       'LBL_MASSEDIT_FORM_HEADER'=>'Edición Masiva - Registros Campos',
-    
+
       // Product Bundles
       'Product Bundles'=>'Productos Compuestos',
-    
+
       // vtlib customization: Language strings
       'VTLIB_MOD_NOT_ACTIVE' => ' módulo no está activado!',
 
@@ -1116,7 +1113,7 @@ $app_strings = array (
      // Module Sequence Numbering
      'LBL_DUPLICATE' => 'Duplicar',
      'LBL_CLICK' => 'Clic',
-     'LBL_TO_CONFIGURE' => 'para Configurar el', 
+     'LBL_TO_CONFIGURE' => 'para Configurar el',
 
      // For Privacy Policy
      'LNK_PRIVACY_POLICY'=>'Política de Privacidad',
@@ -1130,7 +1127,7 @@ $app_strings = array (
      'LBL_FIELDLISTS'=> 'Lista de Campos',
      'LBL_RECORD'=>'Registro #',
      'LBL_DUP_PERMISSION' => 'No tienes permiso para eliminar ',
-     'recordid' => 'id registro',
+     'recordid' => 'Registro',
      'Entity Type' => 'Tipo Entidad',
 
      // gmailbookmarklet customization
@@ -1259,6 +1256,7 @@ $app_strings = array (
 	'SetReturnAddressDescription' => 'Selecciona que dirección quieres sobrescribir, si procede',
 	'Subscribe' => 'Suscribir',
 	'View History' => 'Ver Histórico',
+	'SYNCH_NOW' => 'Sincroniza Ahora',
 );
 
 // Translation for currency names
@@ -1380,7 +1378,6 @@ $app_currency_strings = array(
 	'Venezuela, Bolivares Fuertes' => 'Venezuela, Bolivares Fuertes',
 	'Vietnam, Dong' 		=> 'Vietnam, Dong',
 	'Zimbabwe Dollars' 		=> 'Zimbabwe Dollars',
-	'China, Yuan Renminbi' 	=> 'China, Yuan Renminbi',
 	'Afghanistan, Afghanis' => 'Afghanistan, Afghanis',
 	'Cambodia, Riels' 		=> 'Cambodia, Riels',
     'China, Yuan Renminbi' => 'China, Yuan Renminbi',

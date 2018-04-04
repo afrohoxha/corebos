@@ -108,7 +108,7 @@ if (typeof(ImportJs) == 'undefined') {
 				var selectedFieldName = selectedFieldElement.val();
 				var selectedFieldDefaultValueElement = jQuery('#'+selectedFieldName+'_defaultvalue', fieldElement);
 				var defaultValue = '';
-				if(selectedFieldDefaultValueElement.attr('type') == 'checkbox') {
+				if(selectedFieldDefaultValueElement.prop('type') == 'checkbox') {
 					defaultValue = selectedFieldDefaultValueElement.is(':checked');
 				} else {
 					defaultValue = selectedFieldDefaultValueElement.val();
@@ -130,9 +130,7 @@ if (typeof(ImportJs) == 'undefined') {
 			if (mandatoryFields!='') {
 				mandatoryFields = JSON.parse(mandatoryFields);
 				for(var mandatoryFieldName in mandatoryFields) {
-					if(mandatoryFieldName in mappedFields) {
-						continue;
-					} else {
+					if (!(mandatoryFieldName in mappedFields)) {
 						missingMandatoryFields.push('"'+mandatoryFields[mandatoryFieldName]+'"');
 					}
 				}
@@ -168,7 +166,7 @@ if (typeof(ImportJs) == 'undefined') {
 
 		loadSavedMap: function() {
 			var selectedMapElement = jQuery('#saved_maps option:selected');
-			var mapId = selectedMapElement.attr('id');
+			var mapId = selectedMapElement.prop('id');
 			var fieldsList = jQuery('.fieldIdentifier');
 			fieldsList.each(function(i, element) {
 				var fieldElement = jQuery(element);
@@ -189,25 +187,29 @@ if (typeof(ImportJs) == 'undefined') {
 				header = header.replace(/\/eq\//g, '=');
 				header = header.replace(/\/amp\//g, '&');
 				mapping["'"+header+"'"] = mappingPair[1];
+				mapping[i] = mappingPair[1]; /* To make Row based match when there is no header */
 			}
+			var maparray = Object.values(mapping);
 			fieldsList.each(function(i, element) {
 				var fieldElement = jQuery(element);
 				var rowId = jQuery('[name=row_counter]', fieldElement).get(0).value;
 				var headerNameElement = jQuery('[name=header_name]', fieldElement).get(0);
 				var headerName = jQuery(headerNameElement).html();
-				if("'"+headerName+"'" in mapping) {
+				if ("'"+headerName+"'" in mapping) {
 					jQuery('[name=mapped_fields]', fieldElement).val(mapping["'"+headerName+"'"]);
-				} else if(rowId in mapping) {
-					jQuery('[name=mapped_fields]', fieldElement).val($rowId);
+				} else if (maparray.indexOf(headerName)>-1) {
+						jQuery('[name=mapped_fields]', fieldElement).val(headerName);
+				} else if(rowId-1 in mapping) { /* Row based match when there is no header - but saved map is loaded. */
+					jQuery('[name=mapped_fields]', fieldElement).val(mapping[rowId-1]);
 				}
-				ImportJs.loadDefaultValueWidget(fieldElement.attr('id'));
+				ImportJs.loadDefaultValueWidget(fieldElement.prop('id'));
 			});
 		},
 
 		deleteMap : function(module) {
 			if(confirm(alert_arr.ARE_YOU_SURE_YOU_WANT_TO_DELETE)) {
 				var selectedMapElement = jQuery('#saved_maps option:selected');
-				var mapId = selectedMapElement.attr('id');
+				var mapId = selectedMapElement.prop('id');
 				jQuery('#status').show();
 				jQuery.ajax( {
 					url  : 'index.php',
@@ -272,7 +274,7 @@ if (typeof(ImportJs) == 'undefined') {
 				var fieldElement = jQuery(element);
 				var mappedFieldName = jQuery('[name=mapped_fields]', fieldElement).val();
 				if(mappedFieldName != '') {
-					ImportJs.loadDefaultValueWidget(fieldElement.attr('id'));
+					ImportJs.loadDefaultValueWidget(fieldElement.prop('id'));
 				}
 			});
 

@@ -194,14 +194,15 @@ class VtigerCRMObjectMeta extends EntityMeta {
 		if (empty($webserviceId)) {
 			$id = '';
 		} else {
-			$idComponents = vtws_getIdComponents($webserviceId);
-			$id=$idComponents[1];
+			if (strpos($webserviceId, 'x')>0) {
+				$idComponents = vtws_getIdComponents($webserviceId);
+				$id = $idComponents[1];
+			} else {
+				$id = $webserviceId;
+			}
 		}
 		$permitted = isPermitted($this->getTabName(),$operation,$id);
-		if(strcmp($permitted,"yes")===0){
-			return true;
-		}
-		return false;
+		return strcmp($permitted,'yes')===0;
 	}
 
 	function hasAssignPrivilege($webserviceId){
@@ -315,6 +316,13 @@ class VtigerCRMObjectMeta extends EntityMeta {
 		return parent::getEmailFields();
 	}
 
+	function getImageFields() {
+		if (!$this->meta) {
+			$this->retrieveMeta();
+		}
+		return parent::getImageFields();
+	}
+
 	function getFieldIdFromFieldName($fieldName){
 		if(!$this->meta){
 			$this->retrieveMeta();
@@ -375,7 +383,7 @@ class VtigerCRMObjectMeta extends EntityMeta {
 			$condition = $uniqueFieldsRestriction;
 		require('user_privileges/user_privileges_'.$this->user->id.'.php');
 		if($is_admin == true || $profileGlobalPermission[1] == 0 || $profileGlobalPermission[2] ==0){
-			$sql = "select *, '0' as readonly from vtiger_field where ".$condition." and block in (".generateQuestionMarks($block).") and displaytype in (1,2,3,4)";
+			$sql = "select *, '0' as readonly from vtiger_field where ".$condition." and block in (".generateQuestionMarks($block).") and displaytype in (1,2,3,4) ORDER BY vtiger_field.sequence ASC";
 			$params = array($tabid, $block);
 		}else{
 			$profileList = getCurrentUserProfileList();
@@ -388,7 +396,7 @@ class VtigerCRMObjectMeta extends EntityMeta {
 						ON vtiger_def_org_field.fieldid = vtiger_field.fieldid
 						WHERE ".$condition." AND vtiger_profile2field.visible = 0
 						AND vtiger_profile2field.profileid IN (". generateQuestionMarks($profileList) .")
-						AND vtiger_def_org_field.visible = 0 and vtiger_field.block in (".generateQuestionMarks($block).") and vtiger_field.displaytype in (1,2,3,4) and vtiger_field.presence in (0,2)";
+						AND vtiger_def_org_field.visible = 0 and vtiger_field.block in (".generateQuestionMarks($block).") and vtiger_field.displaytype in (1,2,3,4) and vtiger_field.presence in (0,2) ORDER BY vtiger_field.sequence ASC";
 				$params = array($tabid, $profileList, $block);
 			} else {
 				$sql = "SELECT distinct vtiger_field.*, vtiger_profile2field.readonly
@@ -399,7 +407,7 @@ class VtigerCRMObjectMeta extends EntityMeta {
 						ON vtiger_def_org_field.fieldid = vtiger_field.fieldid
 						WHERE ".$condition."
 						AND vtiger_profile2field.visible = 0
-						AND vtiger_def_org_field.visible = 0 and vtiger_field.block in (".generateQuestionMarks($block).") and vtiger_field.displaytype in (1,2,3,4) and vtiger_field.presence in (0,2)";
+						AND vtiger_def_org_field.visible = 0 and vtiger_field.block in (".generateQuestionMarks($block).") and vtiger_field.displaytype in (1,2,3,4) and vtiger_field.presence in (0,2) ORDER BY vtiger_field.sequence ASC";
 				$params = array($tabid, $block);
 			}
 		}

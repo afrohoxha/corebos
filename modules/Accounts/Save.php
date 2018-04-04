@@ -9,7 +9,6 @@
  ************************************************************************************/
 global $current_user, $currentModule, $adb, $singlepane_view;
 
-$search = vtlib_purify($_REQUEST['search_url']);
 if (isset($_REQUEST['dup_check']) && $_REQUEST['dup_check'] != '') {
 	$value = vtlib_purify($_REQUEST['accountname']);
 	$query = 'SELECT accountname FROM vtiger_account,vtiger_crmentity WHERE accountname =? and vtiger_account.accountid = vtiger_crmentity.crmid and vtiger_crmentity.deleted != 1';
@@ -17,7 +16,7 @@ if (isset($_REQUEST['dup_check']) && $_REQUEST['dup_check'] != '') {
 	$id = vtlib_purify($_REQUEST['record']);
 	if(isset($id) && $id !='') {
 		$query .= ' and vtiger_account.accountid != ?';
-		array_push($params, $id);
+		$params[] = $id;
 	}
 	$result = $adb->pquery($query, $params);
 	if($adb->num_rows($result) > 0) {

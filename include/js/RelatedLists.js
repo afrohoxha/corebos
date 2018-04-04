@@ -46,8 +46,8 @@ function OpenWindow(url) {
 
 function isRelatedListBlockLoaded(id,urldata){
 	var elem = document.getElementById(id);
-	if(elem == null || typeof elem == 'undefined' || urldata.indexOf('order_by') != -1 ||
-		urldata.indexOf('start') != -1 || urldata.indexOf('withCount') != -1 || urldata.indexOf('email_filter') != -1){
+	if (elem == null || typeof elem == 'undefined' || urldata.indexOf('order_by') != -1 || urldata.indexOf('start') != -1 ||
+		urldata.indexOf('withCount') != -1 || urldata.indexOf('email_filter') != -1 || urldata.indexOf('cbcalendar_filter') != -1) {
 		return false;
 	}
 	var tables = elem.getElementsByTagName('table');
@@ -113,8 +113,36 @@ function loadRelatedListBlock(urldata,target,imagesuffix) {
 						}
 						updateParentCheckbox(obj,imagesuffix);
 					}
+					if (typeof RLColorizerList === "function") {
+						var relation = getQueryVariable(urldata,'relation_id');
+						if(relation != ''){
+							jQuery.ajax({
+								method: 'POST',
+								url: 'index.php?module=Utilities&action=UtilitiesAjax&file=ExecuteFunctions&functiontocall=getRelatedListInfo&relation_id='+relation,
+							}).done(function (response) {
+								var resp = JSON.parse(response);
+								var rlModule = resp.modulerel;
+								RLColorizerList(rlModule);
+							});
+						}else{
+							rlModule = imagesuffix.replace(document.getElementById('return_module').value + '_','');
+							RLColorizerList(rlModule);
+						}
+					}
 			}
 	);
+}
+
+function getQueryVariable(urldata,variable) {
+	var query =urldata;
+	var vars = query.split('&');
+	for (var i = 0; i < vars.length; i++) {
+		var pair = vars[i].split('=');
+		if (decodeURIComponent(pair[0]) == variable) {
+			return decodeURIComponent(pair[1]);
+		}
+	}
+	return '';
 }
 
 function hideRelatedListBlock(target, imagesuffix) {

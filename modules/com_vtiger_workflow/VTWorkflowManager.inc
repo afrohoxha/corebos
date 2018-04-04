@@ -31,8 +31,14 @@
 
 		function save($workflow){
 			$adb=$this->adb;
+			if (!isset($workflow->schtypeid)) $workflow->schtypeid = 0;
+			if (!isset($workflow->schtime)) $workflow->schtime = '00:00:00';
+			if (!isset($workflow->schdayofmonth)) $workflow->schdayofmonth = '';
+			if (!isset($workflow->schdayofweek)) $workflow->schdayofweek = '';
+			if (!isset($workflow->schannualdates)) $workflow->schannualdates = '';
+			if (!isset($workflow->schminuteinterval)) $workflow->schminuteinterval = '';
+			$wf=$workflow;
 			if(!empty($workflow->id)){
-				$wf=$workflow;
 				$adb->pquery("update com_vtiger_workflows set
 								module_name=?, summary=?, test=?, execution_condition=?, defaultworkflow=?,
 								schtypeid=?, schtime=?, schdayofmonth=?, schdayofweek=?, schannualdates=?,schminuteinterval=? where workflow_id=?",
@@ -41,7 +47,6 @@
 			}else{
 				$workflowId = $adb->getUniqueID("com_vtiger_workflows");
 				$workflow->id = $workflowId;
-				$wf=$workflow;
 
 				$result=$adb->getColumnNames("com_vtiger_workflows");
 				if(in_array("type",$result)) {
@@ -84,7 +89,7 @@
 			$params = array(VTWorkflowManager::$ON_SCHEDULE);
 			if($referenceTime != '') {
 				$query .= " AND (nexttrigger_time = '' OR nexttrigger_time IS NULL OR nexttrigger_time <= ?)";
-				array_push($params, $referenceTime);
+				$params[] = $referenceTime;
 			}
 			$result = $adb->pquery($query, $params);
 			return $this->getWorkflowsForResult($result);
@@ -135,7 +140,6 @@
 			}
 			$rrs = $adb->pquery('select setype,deleted from vtiger_crmentity where crmid=?', array($recordid));
 			if (!$rrs) return false;
-			$rec = $adb->fetch_array($rrs);
 			$moduleName = $adb->query_result($rrs, 0, 'setype');
 			$deleted = $adb->query_result($rrs, 0, 'deleted');
 			if ($deleted!=0 or in_array($moduleName, $not_supported)) {
@@ -173,11 +177,12 @@
 		}
 
 		function getoneRACWorkflowForRecord($moduleName,$recordid) {
+			$wfs = $this->getRACWorkflowsForModule($moduleName);
+			if (count($wfs)==0) return false;
 			$util = new VTWorkflowUtils();
 			$adminUser = $util->adminUser();
 			$entityCache = new VTEntityCache($adminUser);
 			$entityData = $entityCache->forId($recordid);
-			$wfs = $this->getRACWorkflowsForModule($moduleName);
 			$found = false;
 			foreach ($wfs as $wf) {
 				$found = $wf->evaluate($entityCache, $recordid);
@@ -194,7 +199,6 @@
 		function executeRACWorkflow($workflow,$recordid) {
 			$adb=$this->adb;
 			$tm = new VTTaskManager($adb);
-			$taskQueue = new VTTaskQueue($adb);
 			$tasks = $tm->getTasksForWorkflow($workflow->id);
 			foreach($tasks as $task){
 				if(is_object($task) and $task->active and get_class($task) == 'CBSelectcbMap') {
@@ -294,9 +298,8 @@
 			$exp['tasks'] = array();
 			$tm = new VTTaskManager($this->adb);
 			$tasks = $tm->getTasksForWorkflow($workflow->id);
-			foreach($tasks as $task){
-				unset($task->id);
-				unset($task->workflowId);
+			foreach ($tasks as $task) {
+				unset($task->id,$task->workflowId);
 				$exp['tasks'][] = serialize($task);
 			}
 			return  json_encode($exp);
@@ -636,10 +639,10 @@
 					$nextTriggerDay = null;
 					sort($scheduledDaysOfMonth);
 					foreach ($scheduledDaysOfMonth as $day) {
-						if($day == $currentDayOfMonth) {
+						if ($day == $currentDayOfMonth) {
 							$currentTime = time();
-							$schTime = strtotime($date = date('Y').'-'.date('m').'-'.$day.' '.$scheduledTime);
-							if($schTime > $currentTime) {
+							$schTime = strtotime(date('Y-m-').$day.' '.$scheduledTime);
+							if ($schTime > $currentTime) {
 								$nextTriggerDay = $day;
 								break;
 							}

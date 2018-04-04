@@ -20,48 +20,48 @@
  * The accepted format is:
  <map>
   <originmodule>
-    <originid>22</originid>  {optional}
-    <originname>SalesOrder</originname>
+	<originid>22</originid>  {optional}
+	<originname>SalesOrder</originname>
   </originmodule>
   <relatedlists>
    <relatedlist>
    <module>{parentmodule}</module>
    <linkfield></linkfield>
-    <columns>
-     <field>
-      <label></label>
-      <name></name>
-      <table></table>
-      <columnname></columnname>
-     </field>
-     ...
-    </columns>
+	<columns>
+	 <field>
+	  <label></label>
+	  <name></name>
+	  <table></table>
+	  <columnname></columnname>
+	 </field>
+	 ...
+	</columns>
    </relatedlist>
    ....
   </relatedlists>
   <popup>
-    <linkfield></linkfield>
-    <columns>
-     <field>
-      <label><label>
-      <name><name>
-      <table><table>
-      <columnname><columnname>
-     </field>
-     ...
-    </columns>
+	<linkfield></linkfield>
+	<columns>
+	 <field>
+	  <label><label>
+	  <name><name>
+	  <table><table>
+	  <columnname><columnname>
+	 </field>
+	 ...
+	</columns>
   </popup>
  </map>
  *************************************************************************************************/
-require_once('modules/cbMap/cbMap.php');
-require_once('modules/cbMap/processmap/processMap.php');
+require_once 'modules/cbMap/cbMap.php';
+require_once 'modules/cbMap/processmap/processMap.php';
 
 class ListColumns extends processcbMap {
 	private $mapping = array();
 	private $modulename = '';
 	private $moduleid = 0;
 
-	function processMap($arguments) {
+	public function processMap($arguments) {
 		$this->convertMap2Array();
 		return $this;
 	}
@@ -108,6 +108,7 @@ class ListColumns extends processcbMap {
 	}
 
 	private function convertMap2Array() {
+		global $adb;
 		$xml = $this->getXMLContent();
 		$this->modulename = (String)$xml->originmodule->originname;
 		$this->moduleid = (isset($xml->originmodule->originid) ? (String)$xml->originmodule->originid : 0);
@@ -121,25 +122,35 @@ class ListColumns extends processcbMap {
 		if (isset($xml->popup)) {
 			$this->mapping['cbmapPOPUP']['SearchFields'] = array();
 			$this->mapping['cbmapPOPUP']['SearchFieldsName'] = array();
-			if (!empty($xml->popup->linkfield)) $this->mapping['cbmapPOPUP']['LINKFIELD'] = (String)$xml->popup->linkfield;
-			foreach($xml->popup->columns->field as $k=>$v) {
+			if (!empty($xml->popup->linkfield)) {
+				$this->mapping['cbmapPOPUP']['LINKFIELD'] = (String)$xml->popup->linkfield;
+			}
+			foreach ($xml->popup->columns->field as $k => $v) {
 				$this->mapping['cbmapPOPUP']['SearchFields'][(String)$v->label] = array((String)$v->table=>(String)$v->columnname);
 				$this->mapping['cbmapPOPUP']['SearchFieldsName'][(String)$v->label] = (String)$v->name;
 			}
 		}
 		if (isset($xml->relatedlists)) {
-			foreach($xml->relatedlists->relatedlist as $k=>$v) {
+			foreach ($xml->relatedlists->relatedlist as $k => $v) {
 				$modulename = (String)$v->module;
 				$this->mapping[$modulename]['ListFields'] = array();
 				$this->mapping[$modulename]['ListFieldsName'] = array();
 				$this->mapping[$modulename]['LINKFIELD'] = (!empty($v->linkfield) ? (String)$v->linkfield : $f->list_link_field);
-				foreach($v->columns->field as $kl=>$vl) {
-					$this->mapping[$modulename]['ListFields'][(String)$vl->label] = array((String)$vl->table=>(String)$vl->columnname);
+				foreach ($v->columns->field as $vl) {
+					$table = $vl->table;
+					$columnname = $vl->columnname;
+					$tabid = getTabid($this->modulename);
+					$res = $adb->pquery("SELECT columnname,tablename FROM vtiger_field WHERE fieldname=? AND tabid=?", array((String)$vl->name,$tabid));
+					$nr = $adb->num_rows($res);
+					if ($nr > 0) {
+						$table = str_replace('vtiger_', '', $adb->query_result($res, 0, 'tablename'));
+						$columnname = $adb->query_result($res, 0, 'columnname');
+					}
+					$this->mapping[$modulename]['ListFields'][(String)$vl->label] = array((String)$table=>(String)$columnname);
 					$this->mapping[$modulename]['ListFieldsName'][(String)$vl->label] = (String)$vl->name;
 				}
 			}
 		}
 	}
-
 }
 ?>

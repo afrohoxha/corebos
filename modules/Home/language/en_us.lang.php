@@ -8,7 +8,7 @@
  * All Rights Reserved.
  ********************************************************************************/
 
-$mod_strings = Array(
+$mod_strings = array(
 'LBL_NEW_FORM_TITLE'=>'New Contact',
 'LBL_FIRST_NAME'=>'First Name:',
 'LBL_LAST_NAME'=>'Last Name:',
@@ -49,10 +49,7 @@ $mod_strings = Array(
 'Last 2 Days'=>'Last 2 Days',
 'Last Ten Days'=>'Last Ten Days',
 
-// Added/Updated for vtiger CRM 5.0.4 
 'User List'=>'User List',
-
-// Added after 5.0.4 GA
 
 //ADDED for Home Page Customization
 'LBL_HOME_MODULE' => 'Module',
@@ -61,10 +58,10 @@ $mod_strings = Array(
 'LBL_HOME_STUFFTITLE'=>'Window Title',
 'LBL_HOME_SHOW'=>'Show',
 'LBL_HOME_FILTERBY'=>'Filter By',
-'LBL_HOME_Fields'=>'Fields To Show <br>(select any two)',
+'LBL_HOME_Fields'=>'Fields To Show',
 'LBL_HOME_PRESSCTRL'=>'(Press "Ctrl" <br> for multiple selection)',
 'LBL_HOME_RSSURL'=>'RSS URL',
-'LBL_HOME_DASHBOARD_NAME'=>'DashBoard Name', 
+'LBL_HOME_DASHBOARD_NAME'=>'DashBoard Name',
 'LBL_HOME_DASHBOARD_TYPE'=>'DashBoard Type',
 'LBL_HOME_HORIZONTAL_BARCHART'=>'Horizontal Bar Chart',
 'LBL_HOME_VERTICAL_BARCHART'=>'Vertical Bar Chart',
@@ -88,13 +85,12 @@ $mod_strings = Array(
 'LBL_TWO_COLUMN'=>'Two Columns',
 'LBL_THREE_COLUMN'=>'Three Columns',
 'LBL_FOUR_COLUMN'=>'Four Columns',
-// END
 
 // Default home page widget's title
 'Top Accounts'=>'Top Organizations',
 'Top Potentials'=>'Top Opportunities',
 'Top Quotes'=>'Top Quotes',
-'Top Trouble Tickets'=>'Top Trouble Tickets',
+'Top Trouble Tickets'=>'Top Support Tickets',
 'Top Invoices'=>'Top Invoices',
 'Top Sales Orders'=>'Top Sales Orders',
 'Top Purchase Orders'=>'Top Purchase Orders',
@@ -121,6 +117,8 @@ $mod_strings = Array(
 'LBL_HOME_ADDWINDOW' => 'Add Window',
 'LBL_GETTING_STARTED' => 'Getting Started',
 'ExpirePasswordAfterDays' => 'Expire Password After Days',
+'FieldsNotFoundInFilter' => 'Fields not found in Selected Filter',
+'FilterNotFound' => 'Filter You have Selected is Not Found',
+'Permission Denied' => 'Permission Denied',
 );
-
 ?>

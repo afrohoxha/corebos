@@ -8,15 +8,16 @@
  * All Rights Reserved.
  * Modified by crm-now GmbH, www.crm-now.com
  ************************************************************************************/
-include_once dirname(__FILE__) . '/FetchRecord.php';
+include_once __DIR__ . '/FetchRecord.php';
 include_once 'include/Webservices/Create.php';
 include_once 'include/Webservices/Update.php';
 
 class crmtogo_WS_SaveRecord extends crmtogo_WS_FetchRecord {
+
 	protected $recordValues = false;
 
 	// Avoid retrieve and return the value obtained after Create or Update
-	protected function processRetrieve(crmtogo_API_Request $request) {
+	protected function processRetrieve(crmtogo_API_Request $request, $module) {
 		return $this->recordValues;
 	}
 
@@ -47,21 +48,28 @@ class crmtogo_WS_SaveRecord extends crmtogo_WS_FetchRecord {
 				$this->recordValues = array();
 			}
 		
-			if ($module == 'Events' || $module == 'Calendar') {
+			if ($module == 'Timecontrol' || $module == 'cbCalendar') {
+				if($module == 'Timecontrol'){
+					$endDname = 'date_end';
+				}else{
+					$endDname = 'due_date';
+				}
 				//Start Date and Time values
-				$date = new DateTimeField($values["date_start"]. ' ' . $values["time_start"].":00");
-				$values["time_start"] = $date->getDBInsertTimeValue();
-				$values["date_start"] = $date->getDBInsertDateValue();
+				$values['dtstart'] = $values['date_start'].' '.$values['time_start'];
 				//End Date and Time values
 				if (isset ($values["time_end"])) {
-					$endTime = $values["time_end"].":00";
+					$endTime = $values["time_end"];
 				}
 				else {
 					$endTime = '00:00:00';
 				}
-				$date = new DateTimeField($values["due_date"]. ' ' . $endTime);
-				$values["due_date"] = $date->getDBInsertDateValue();
-				$values["time_end"] = $date->getDBInsertTimeValue();;
+				if(!empty($values[$endDname])){
+					$values['dtend'] = $values[$endDname].' '.$values['time_end'];
+				}
+			}
+			if ($module == 'cbCalendar') {
+				$values['followupdt'] = $values["followupdt"]. ' ' . $values["followupdt_time"];
+				$values["followupdt_time"] = '';
 			}
 			// Set the modified values
 			foreach($values as $name => $value) {
@@ -84,10 +92,7 @@ class crmtogo_WS_SaveRecord extends crmtogo_WS_FetchRecord {
 			} 
 			else {
 				// Set right target module name for Calendar/Event record
-				if ($module == 'Calendar') {
-					if (!empty($this->recordValues['eventstatus']) && $this->recordValues['activitytype'] != 'Task') {
-						$module = 'Events';
-					}
+				if ($module == 'cbCalendar') {
 					// make sure visibility is not NULL
 					if (empty($this->recordValues['visibility'])) {
 						$this->recordValues['visibility'] = 'all';

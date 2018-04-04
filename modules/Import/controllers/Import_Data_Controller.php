@@ -162,7 +162,8 @@ class Import_Data_Controller {
 		$sql = 'SELECT * FROM ' . $tableName . ' WHERE status = '. Import_Data_Controller::$IMPORT_RECORD_NONE;
 
 		if($this->batchImport) {
-			$importBatchLimit = GlobalVariable::getVariable('Import_Batch_Limit','250');
+			$importBatchLimit = GlobalVariable::getVariable('Import_Batch_Limit',250);
+			if (!is_numeric($importBatchLimit)) $importBatchLimit = 250;
 			$sql .= ' LIMIT '. $importBatchLimit;
 		}
 		$result = $adb->query($sql);
@@ -198,10 +199,7 @@ class Import_Data_Controller {
 					$queryGenerator->setFields($fieldsList);
 
 					$mergeFields = $this->mergeFields;
-					foreach ($mergeFields as $index => $mergeField) {
-						if ($index != 0) {
-							$queryGenerator->addConditionGlue(QueryGenerator::$AND);
-						}
+					foreach ($mergeFields as $mergeField) {
 						$comparisonValue = $fieldData[$mergeField];
 						$fieldInstance = $moduleFields[$mergeField];
 						if ($fieldInstance->getFieldDataType() == 'owner') {
@@ -218,7 +216,7 @@ class Import_Data_Controller {
 								$comparisonValue = trim($referenceFileValueComponents[1]);
 							}
 						}
-						$queryGenerator->addCondition($mergeField, $comparisonValue, 'e');
+						$queryGenerator->addCondition($mergeField, $comparisonValue, 'e', QueryGenerator::$AND);
 					}
 					$query = $queryGenerator->getQuery();
 					$duplicatesResult = $adb->query($query);

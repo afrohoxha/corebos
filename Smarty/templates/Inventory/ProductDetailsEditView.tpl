@@ -210,7 +210,7 @@ function displayCoords(currObj,obj,mode,curr_row)
 			<tr>
 				<td class="small" id="setComment">
 					<textarea id="{$comment}" name="{$comment}" class=small style="width:70%;height:40px">{$data.$comment}</textarea>
-					<img src="{'clear_field.gif'|@vtiger_imageurl:$THEME}" onClick="{literal}${/literal}('{$comment}').value=''"; style="cursor:pointer;" />
+					<img src="{'clear_field.gif'|@vtiger_imageurl:$THEME}" onClick="getObj('{$comment}').value=''" style="cursor:pointer;" />
 				</td>
 			</tr>
 		</table>
@@ -393,12 +393,12 @@ so we will get that array, parse that array and fill the details
 				<td class="lineOnTop">&nbsp;</td>
 			   </tr>
 			   <tr>
-				<td align="left"><input type="radio" name="discount_final" onclick="setDiscount(this,'_final');  calcTotal(); calcGroupTax();" {$FINAL.checked_discount_percentage_final}>&nbsp; % {$APP.LBL_OF_PRICE}</td>
-				<td align="right"><input type="text" class="small" size="5" id="discount_percentage_final" name="discount_percentage_final" value="{$FINAL.discount_percentage_final}" {$FINAL.style_discount_percentage_final} onBlur="setDiscount(this,'_final'); calcGroupTax(); calcTotal();">&nbsp;%</td>
+				<td align="left"><input type="radio" name="discount_final" onclick="setDiscount(this,'_final');  calcTotal(); calcGroupTax();" {if isset($FINAL.checked_discount_percentage_final)}{$FINAL.checked_discount_percentage_final}{/if}>&nbsp; % {$APP.LBL_OF_PRICE}</td>
+				<td align="right"><input type="text" class="small" size="5" id="discount_percentage_final" name="discount_percentage_final" value="{$FINAL.discount_percentage_final}" {if isset($FINAL.style_discount_percentage_final)}{$FINAL.style_discount_percentage_final}{/if} onBlur="setDiscount(this,'_final'); calcGroupTax(); calcTotal();">&nbsp;%</td>
 			   </tr>
 			   <tr>
-				<td align="left" nowrap><input type="radio" name="discount_final" onclick="setDiscount(this,'_final');  calcTotal(); calcGroupTax();" {$FINAL.checked_discount_amount_final}>&nbsp;{$APP.LBL_DIRECT_PRICE_REDUCTION}</td>
-				<td align="right"><input type="text" id="discount_amount_final" name="discount_amount_final" size="5" value="{$FINAL.discount_amount_final}" {$FINAL.style_discount_amount_final} onBlur="setDiscount(this,'_final');  calcGroupTax(); calcTotal();"></td>
+				<td align="left" nowrap><input type="radio" name="discount_final" onclick="setDiscount(this,'_final');  calcTotal(); calcGroupTax();" {if isset($FINAL.checked_discount_amount_final)}{$FINAL.checked_discount_amount_final}{/if}>&nbsp;{$APP.LBL_DIRECT_PRICE_REDUCTION}</td>
+				<td align="right"><input type="text" id="discount_amount_final" name="discount_amount_final" size="5" value="{$FINAL.discount_amount_final}" {if isset($FINAL.style_discount_amount_final)}{$FINAL.style_discount_amount_final}{/if} onBlur="setDiscount(this,'_final');  calcGroupTax(); calcTotal();"></td>
 			   </tr>
 			</table>
 		</div>
@@ -432,7 +432,7 @@ so we will get that array, parse that array and fill the details
 		<input id="shipping_handling_charge" name="shipping_handling_charge" type="text" class="small" style="width:75px;text-align:right" align="right" value="{$FINAL.shipping_handling_charge}" onBlur="calcSHTax();">
 	</td>
    </tr>
-
+{if !empty($FINAL.sh_taxes)}
    <tr valign="top">
 	<td class="crmTableRow small" style="border-right:1px #dadada;">&nbsp;</td>
 	<td class="crmTableRow small" align="right">
@@ -464,10 +464,10 @@ so we will get that array, parse that array and fill the details
 					</table>
 				</div>
 				<!-- End Popup Div for Shipping and Handling TAX -->
-
 	</td>
 	<td id="shipping_handling_tax" class="crmTableRow small" align="right">{$FINAL.shtax_totalamount}</td>
    </tr>
+{/if}
    <tr valign="top">
 	<td class="crmTableRow small" style="border-right:1px #dadada;">&nbsp;</td>
 	<td class="crmTableRow small" align="right">
@@ -505,6 +505,7 @@ so we will get that array, parse that array and fill the details
 	{if $MODULE eq 'Invoice' && $data.$entityIndentifier neq 'Services'}
 		<script>stock_alert('{$row_no}');</script>
 	{/if}
+	<script>rowCnt={$row_no};</script>
 {/foreach}
 
 <!-- Added to calculate the tax and total values when page loads -->

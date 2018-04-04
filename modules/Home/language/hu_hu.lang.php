@@ -5,14 +5,9 @@
  * The Original Code is:  vtiger CRM Open Source
  * The Initial Developer of the Original Code is vtiger.
  * Portions created by vtiger are Copyright (C) vtiger.
+ * Contributor(s): Istvan Holbok,  e-mail: holbok@gmail.com , mobil: +3670-3420900 , Skype: holboki
  * All Rights Reserved.
  ************************************************************************************/
- /*********************************************************************************
- * $Header:  \modules\ConfigEditor\language\hu_hu.lang.php - 9:46 2011.11.11. $
- * Description:  Defines the Hungarian language pack for the ConfigEditor module vtiger 5.3.x
- * All Rights Reserved.
- * Contributor(s): Istvan Holbok,  e-mail: holbok@gmail.com , mobil: +3670-3420900 , Skype: holboki
- ********************************************************************************/
 
 $mod_strings = array(
 	'LBL_NEW_FORM_TITLE' => 'Új Kapcsolat',
@@ -53,7 +48,7 @@ $mod_strings = array(
 	'LBL_HOME_STUFFTITLE' => 'Ablak cím',
 	'LBL_HOME_SHOW' => 'Mutat',
 	'LBL_HOME_FILTERBY' => 'Szűrő: ',
-	'LBL_HOME_Fields' => 'Mutatandó Mezők <br>(válassz ki kettőt)',
+	'LBL_HOME_Fields' => 'Mutatandó Mezők',
 	'LBL_HOME_PRESSCTRL' => '(Nyomd meg a "Ctrl"-t <br> a többszörös kiválasztáshoz)',
 	'LBL_HOME_RSSURL' => 'RSS URL',
 	'LBL_HOME_DASHBOARD_NAME' => 'Műszerfal neve',
@@ -103,5 +98,8 @@ $mod_strings = array(
 	'LBL_HOME_ADDWINDOW' => 'Add Window',
 	'LBL_GETTING_STARTED' => 'Getting Started',
 	'ExpirePasswordAfterDays' => 'Expire Password After Days',
+	'FieldsNotFoundInFilter' => 'Fields not found in Selected Filter',
+	'FilterNotFound' => 'Filter You have Selected is Not Found',
+	'Permission Denied' => 'Permission Denied',
 );
 ?>

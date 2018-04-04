@@ -7,7 +7,7 @@
  * Portions created by vtiger are Copyright (C) vtiger.
  * All Rights Reserved.
  ************************************************************************************/
-include_once dirname(__FILE__) . '/../ISMSProvider.php';
+include_once __DIR__ . '/../ISMSProvider.php';
 include_once 'vtlib/Vtiger/Net/Client.php';
 
 class ClickATell implements ISMSProvider {
@@ -72,12 +72,12 @@ class ClickATell implements ISMSProvider {
 	}
 
 	public function send($message, $tonumbers) {
-		if(!is_array($tonumbers)) {
-			$tonumbers = array($tonumbers);
-		}
+		$tonumbers = (array)$tonumbers;
 
 		$params = $this->prepareParameters();
-		$params['text'] = $message;
+		$smsarray = $this->smstxtcode($message);
+		$params['text'] = $smsarray[1];
+		$params['unicode'] = $smsarray[0];
 		$params['to'] = implode(',', $tonumbers);
 
 		$serviceURL = $this->getServiceURL(self::SERVICE_SEND);

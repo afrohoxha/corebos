@@ -5,27 +5,12 @@
  * The Original Code is:  vtiger CRM Open Source
  * The Initial Developer of the Original Code is vtiger.
  * Portions created by vtiger are Copyright (C) vtiger.
- * All Rights Reserved.
- * The Initial Developer of the Original Code is SugarCRM, Inc.
- * Portions created by SugarCRM are Copyright (C) SugarCRM, Inc.;
- * Portions created by vtiger are Copyright (C) vtiger.
  * Portions created by Vicus are Copyright (C) Vicus.
  * All Rights Reserved.
  * Feel free to use / redistribute these languagefiles under the VPL 1.0.
- * This translations is based on earlier work of: 
+ * This translations is based on earlier work of:
  * - IT-Online.nl <www.it-online.nl>
  * - Weltevree.org <www.Weltevree.org>
- ********************************************************************************/
-
-/*******************************************************************************
- * Vicus eBusiness Solutions Version Control
- * @package 	NL-Dutch
- * Description	Dutch language pack for vtiger CRM version 5.3.x
- * @author	$Author: luuk $
- * @version 	$Revision: 1.6 $ $Date: 2012/02/28 23:40:22 $
- * @source	$Source: /var/lib/cvs/vtiger530/Dutch/modules/com_vtiger_workflow/language/nl_nl.lang.php,v $
- * @copyright	Copyright (c)2005-2011 Vicus eBusiness Solutions bv <info@vicus.nl>
- * @license	vtiger CRM Public License Version 1.0 (by definition)
  ********************************************************************************/
 
 $mod_strings = array(
@@ -38,7 +23,6 @@ $mod_strings = array(
 'LBL_EDIT_TASK_TITLE'=>'Bewerk een bestaande taak of maak een nieuwe aan',
 'LBL_EDIT_WORKFLOW'=>'Bewerk Werkstroom',
 'LBL_EDIT_WORKFLOW_TITLE'=>'Bewerk een bestaande werkstroom of maak een nieuwe aan',
-'LBL_FROM_TEMPLATE'=>'Van een Sjabloon',
 'LBL_NEW_WORKFLOW'=>'Nieuwe Werkstroom',
 'LBL_NEW_TEMPLATE'=>'Bewaar als Sjabloon',
 'LBL_CREATE_WORKFLOW_FOR'=>'Maak een Werkstroom voor',
@@ -60,7 +44,6 @@ $mod_strings = array(
 'LBL_WORKFLOW_NOTE_CRON_CONFIG'=>'NOTE: U moet het Werkstroom cron script geconfigureerd hebben.',
 'LBL_NO_TEMPLATES'=>'Geen Sjablonen',
 
-// @since vtiger 5.3 / NLDutch 1.3
 'LBL_SELECT'=>'Selecteer',
 'LBL_MESSAGE'=>'Bericht',
 'LBL_SET_FIELD_VALUES'=>'Stel veldwaarde in',
@@ -83,7 +66,7 @@ $mod_strings = array(
 
 'LBL_VALIDATION_DUPLICATE_FIELDNAMES' => 'Zelfde veld is meer dan eens gekozen.',
 'LBL_VALIDATION_INVALID_FIELD_VALUES' => 'Ongeldige veldwaarden',
-'LBL_CREATE_ENTITY_NOTE_ORDER_MATTERS' => 'Opmerking: Formules worden afgewerkt in de volgorde van de aangeboden veldwaarden. Zorg er dus voro dat elk veld een waarde heeft alvorens deze in een formule te gebruiken.',
+'LBL_CREATE_ENTITY_NOTE_ORDER_MATTERS' => 'Opmerking: Formules worden afgewerkt in de volgorde van de aangeboden veldwaarden. Zorg er dus voor dat elk veld een waarde heeft alvorens deze in een formule te gebruiken.',
 'LBL_CREATE_ENTITY_NOTE_BUSINESSMAPS' => 'Note: You can use a Field Business Map to map fields from one entity to the other, in that case the business map definitions will overwrite the ones defined here.',
 'LBL_SET_VALUE' => 'Stel waarde in',
 
@@ -96,7 +79,6 @@ $mod_strings = array(
 'LBL_EMAIL_REPLYTO' => 'Reply To',
 'LBL_AttachmentInField' => 'Attachment In Field',
 'LBL_WORKFLOW_NOTE_EVENT_TASK_TIMEZONE' => 'Opmerking: Alle datum, tijd en herhaalinformatie zoals voor het event ingesteld werken conform de standaard tijdzone, zoals geconfigureerd in config.inc.php',
-
 
 'Select Meta Variables' => 'Selecteer Meta Variabelen',
 'Current Date' => 'Huidige Datum',
@@ -155,7 +137,6 @@ $mod_strings = array(
 'LBL_SELECTED_DATES' => 'Selected Dates',
 'LBL_EXCEEDING_MAXIMUM_LIMIT' => 'Maximum limit exceeded',
 'LBL_NEXT_TRIGGER_TIME' => 'Next trigger time on',
-'LBL_MESSAGE' => 'Message',
 'UpdateInventoryProducts On Every Save' => 'Update Product Inventory',
 'Send Email to user when Notifyowner is True' => 'Send Email to user when Notifyowner is True',
 'Send Email to user when Portal User is True' => 'Send Email to user when Portal User is True',

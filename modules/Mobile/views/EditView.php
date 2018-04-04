@@ -8,57 +8,54 @@
  * All Rights Reserved.
  * Modified by crm-now GmbH, www.crm-now.com
  ************************************************************************************/
-include_once dirname(__FILE__) . '/../api/ws/FetchRecordDetails.php';
-include_once dirname(__FILE__) . '/../api/ws/Utils.php';
-include_once dirname(__FILE__) . '/../api/ws/Describe.php';
+include_once __DIR__ . '/../api/ws/FetchRecordDetails.php';
+include_once __DIR__ . '/../api/ws/Utils.php';
+include_once __DIR__ . '/../api/ws/Describe.php';
 
 class crmtogo_UI_EditView extends crmtogo_WS_FetchRecordDetails {
 
-	function cachedModuleLookupWithRecordId($recordId) {
+	public function cachedModuleLookupWithRecordId($recordId) {
 		$recordIdComponents = explode('x', $recordId);
-    	$modules = $this->sessionGet('_MODULES'); // Should be available post login
-		foreach($modules as $module) {
-			if ($module->id() == $recordIdComponents[0]) { return $module; };
+		$modules = $this->sessionGet('_MODULES'); // Should be available post login
+		foreach ($modules as $module) {
+			if ($module->id() == $recordIdComponents[0]) {
+				return $module;
+			}
 		}
 		return false;
 	}
-	function cachedModuleLookup($currentmodule) {
-    	$modules = $this->sessionGet('_MODULES'); // Should be available post login
-		foreach($modules as $module) {
-			if ($module->name() == $currentmodule) { return $module; };
+
+	public function cachedModuleLookup($currentmodule) {
+		$modules = $this->sessionGet('_MODULES'); // Should be available post login
+		foreach ($modules as $module) {
+			if ($module->name() == $currentmodule) {
+				return $module;
+			}
 		}
 		return false;
 	}
-	
-	function process(crmtogo_API_Request $request) {
-		if($request->getOperation()!='create') {
+
+	public function process(crmtogo_API_Request $request) {
+		if ($request->getOperation()!='create') {
 			$wsResponse = parent::process($request);
-		}
-		else {
+		} else {
 			$wsResponse = crmtogo_WS_Describe::process($request);
 		}
-	
+
 		$response = false;
-		if($wsResponse->hasError()) {
+		if ($wsResponse->hasError()) {
 			$response = $wsResponse;
 		} else {
 			$response = new crmtogo_API_Response();
 			$wsResponseResult = $wsResponse->getResult();
 			$currentModule = $request->get('module');
-			$origmodule = $currentModule;
-			if ( $currentModule == 'Events') {
-				$targetModule = 'Calendar';
-			}
-			else {
-				$targetModule = $currentModule;
-			}
-			
-			if($request->getOperation()!='create') {
+			$targetModule = $currentModule;
+
+			if ($request->getOperation()!='create') {
 				$moduleObj = $this->cachedModuleLookupWithRecordId($wsResponseResult['record']['id']);
 				$record = crmtogo_UI_ModuleRecordModel::buildModelFromResponse($wsResponseResult['record']);
 				$record->setId($wsResponseResult['record']['id']);
-			}
-			else {
+			} else {
 				$moduleObj = $this->cachedModuleLookup($targetModule);
 				$record = crmtogo_UI_ModuleRecordModel::buildModel($wsResponseResult['record']);
 				$record->setId('');
@@ -76,16 +73,19 @@ class crmtogo_UI_EditView extends crmtogo_WS_FetchRecordDetails {
 
 			// change variance for split record id
 			$recordIdComponents = explode('x', $wsResponseResult['record']['id']);
-			//this is a temporary fix for invitees for events, must get modified later			
-			$invited_users=Array();
-			if ($currentModule == 'Events') {
+			//this is a temporary fix for invitees for events, must get modified later
+			$invited_users=array();
+			if ($currentModule=='cbCalendar' && $request->getOperation()!='create') {
 				global $adb;
-				$sql = 'select vtiger_users.user_name,vtiger_invitees.* from vtiger_invitees left join vtiger_users on vtiger_invitees.inviteeid=vtiger_users.id where activityid=?';
+				$sql = 'select vtiger_users.user_name,vtiger_invitees.*
+					from vtiger_invitees
+					left join vtiger_users on vtiger_invitees.inviteeid=vtiger_users.id
+					where activityid=?';
 				$result = $adb->pquery($sql, array($recordIdComponents[1]));
 				$num_rows=$adb->num_rows($result);
-				for($i=0;$i<$num_rows;$i++) {
-					$userid=$adb->query_result($result,$i,'inviteeid');
-					$username=$adb->query_result($result,$i,'user_name');
+				for ($i=0; $i<$num_rows; $i++) {
+					$userid=$adb->query_result($result, $i,'inviteeid');
+					$username=$adb->query_result($result, $i,'user_name');
 					$invited_users[$userid]=$username;
 				}
 			}
@@ -95,24 +95,26 @@ class crmtogo_UI_EditView extends crmtogo_WS_FetchRecordDetails {
 			$viewer->assign('COLOR_HEADER_FOOTER', $config['theme']);
 			$viewer->assign('_MODULE', $moduleObj);
 			$viewer->assign('CURRENTMODUL', $currentModule);
+			$viewer->assign('CURRENTUSERwsid', vtws_getEntityId('Users') . 'x' . $current_user->id);
 			$viewer->assign('_RECORD', $record);
-            $viewer->assign('id', $wsResponseResult['record']['id']);
+			$viewer->assign('id', $wsResponseResult['record']['id']);
 			$viewer->assign('mode', $request->getOperation());
 			$viewer->assign('crmtogorecordid', $wsResponseResult['record']['id']);
 			$viewer->assign('DATEFORMAT',  $current_user->date_format);
 			$viewer->assign('SMARTYDATEFORMAT', $target_date_format);
 			$viewer->assign('HOURFORMATFORMAT', $current_user->hour_format);
 			$viewer->assign('LANGFORMATFORMAT', $target_lang_format);
-			$viewer->assign('INVITEES',  implode (",", array_keys($invited_users)));
+			$viewer->assign('INVITEES',  implode(';', array_keys($invited_users)));
 			$viewer->assign('LANGUAGE', $current_language);
-			$viewer->assign('ORIGMODULE', $origmodule);
+
 			//Get PanelMenu data
 			$modules = $this->sessionGet('_MODULES');
 			$viewer->assign('_MODULES', $modules);
-			if(isset($_REQUEST['quickcreate']) && $_REQUEST['quickcreate'] == 1)
+			if (isset($_REQUEST['quickcreate']) && $_REQUEST['quickcreate'] == 1) {
 				$response = $viewer->process('QuickCreateView.tpl');
-			else
+			} else {
 				$response = $viewer->process('EditView.tpl');
+			}
 		}
 		return $response;
 	}

@@ -13,7 +13,12 @@ checkFileAccessForInclusion("modules/$currentModule/$currentModule.php");
 require_once("modules/$currentModule/$currentModule.php");
 require_once('modules/Emails/mail.php');
 
-$search = isset($_REQUEST['search_url']) ? urlencode(vtlib_purify($_REQUEST['search_url'])) : '';
+if (isset($_REQUEST['search_url'])) {
+	$search = vtlib_purify($_REQUEST['search_url']);
+	if (substr($search, 0, 1) != '&') $search = '&' . $search;
+} else {
+	$search = '';
+}
 $req = new Vtiger_Request();
 $req->setDefault('return_module',$currentModule);
 if(!empty($_REQUEST['return_module'])) {
@@ -32,12 +37,12 @@ if(empty($_REQUEST['return_viewname']) or $singlepane_view == 'true') {
 if(isset($_REQUEST['activity_mode'])) {
 	$req->set('return_activity_mode',$_REQUEST['activity_mode']);
 }
-$req->set('return_start',$_REQUEST['pagenumber']);
+$req->set('return_start',(isset($_REQUEST['pagenumber']) ? $_REQUEST['pagenumber'] : ''));
 
 $focus = new $currentModule();
 setObjectValuesFromRequest($focus);
 
-$mode = vtlib_purify($_REQUEST['mode']);
+$mode = (isset($_REQUEST['mode']) ? vtlib_purify($_REQUEST['mode']) : '');
 $record=vtlib_purify($_REQUEST['record']);
 if($mode) $focus->mode = $mode;
 if($record)$focus->id  = $record;
@@ -51,8 +56,7 @@ if (!isset($_REQUEST['email_opt_out'])) $focus->email_opt_out = 'off';
 if (!isset($_REQUEST['do_not_call'])) $focus->do_not_call = 'off';
 
 //if image added then we have to set that $_FILES['name'] in imagename field then only the image will be displayed
-if($_FILES['imagename']['name'] != '')
-{
+if (!empty($_FILES['imagename']['name'])) {
 	if(isset($_REQUEST['imagename_hidden'])) {
 		$focus->column_fields['imagename'] = vtlib_purify($_REQUEST['imagename_hidden']);
 	} else {
@@ -65,10 +69,19 @@ elseif($focus->id != '')
 	$focus->column_fields['imagename'] = $adb->query_result($result,0,'imagename');
 }
 
-if($_REQUEST['assigntype'] == 'U') {
-	$focus->column_fields['assigned_user_id'] = $_REQUEST['assigned_user_id'];
-} elseif($_REQUEST['assigntype'] == 'T') {
-	$focus->column_fields['assigned_user_id'] = $_REQUEST['assigned_group_id'];
+if (empty($_REQUEST['assigned_user_id']) and empty($_REQUEST['assigned_group_id'])) {
+	if ($focus->mode != 'edit') {
+		$focus->column_fields['assigned_user_id'] = $current_user->id;
+	} else {
+		$ownerrs = $adb->pquery('select smownerid from vtiger_crmentity where crmid=?', array($focus->id));
+		$focus->column_fields['assigned_user_id'] = $adb->query_result($ownerrs, 0, 0);
+	}
+} else {
+	if ($_REQUEST['assigntype'] == 'U') {
+		$focus->column_fields['assigned_user_id'] = $_REQUEST['assigned_user_id'];
+	} elseif ($_REQUEST['assigntype'] == 'T') {
+		$focus->column_fields['assigned_user_id'] = $_REQUEST['assigned_group_id'];
+	}
 }
 list($saveerror,$errormessage,$error_action,$returnvalues) = $focus->preSaveCheck($_REQUEST);
 if ($saveerror) { // there is an error so we go back to EditView.
@@ -107,6 +120,10 @@ if(isset($_REQUEST['return_id']) && $_REQUEST['return_id'] != '') {
 }
 
 if (!isset($__cbSaveSendHeader) || $__cbSaveSendHeader) {
-	header('Location: index.php?' . $req->getReturnURL() . $search);
+	if (isset($_REQUEST['Module_Popup_Edit']) and $_REQUEST['Module_Popup_Edit']==1) {
+		echo "<script>window.close();</script>";
+	} else {
+		header('Location: index.php?' . $req->getReturnURL() . $search);
+	}
 }
 ?>

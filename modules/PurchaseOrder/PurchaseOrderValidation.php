@@ -15,12 +15,12 @@
  *************************************************************************************************/
 global $log,$currentModule,$adb,$current_user;
 
-$screen_values = json_decode($_REQUEST['structure'],true);
+$screen_values = json_decode($_REQUEST['structure'], true);
 $products = array();
 $message = '%%%OK%%%';
 foreach ($screen_values as $sv_name => $sv) {
 	if (strpos($sv_name, 'hdnProductId') !== false) {
-		$i = substr($sv_name, -1);
+		$i = substr($sv_name, 12);
 		$qty_i = 'qty'.$i;
 		$name_i = 'productName'.$i;
 		$type_i = 'lineItemType'.$i;
@@ -43,8 +43,8 @@ foreach ($products as $product) {
 	} else {
 		$divisible = true;
 	}
-	if ( !$divisible && floatval($product['qty']) != intval($product['qty']) ) {
-		$message = $product['name'].' '.getTranslatedString('DIVISIBLE_WARNING_PURCHASE','Products');
+	if (!$divisible && (float)$product['qty'] != (int)$product['qty']) {
+		$message = $product['name'].' '.getTranslatedString('DIVISIBLE_WARNING_PURCHASE', 'Products');
 		break;
 	}
 }

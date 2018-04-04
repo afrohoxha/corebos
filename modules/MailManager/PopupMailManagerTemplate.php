@@ -21,13 +21,13 @@ $theme_path="themes/".$theme."/";
 </head>
 <body>
 	<form action="index.php" onsubmit="VtigerJS_DialogBox.block();">
-		<div class="lvtHeaderText"><?php echo $mod_strings['LBL_EMAIL_TEMPLATES']; ?></div>
+		<div class="lvtHeaderText"><?php echo getTranslatedString('LBL_EMAIL_TEMPLATES','Emails'); ?></div>
 		<hr noshade="noshade" size="1">
 		<input type="hidden" name="module" value="Users">
 		<table style="background-color: rgb(204, 204, 204);" class="small" border="0" cellpadding="5" cellspacing="1" width="100%">
 		<tr>
-		<th width="35%" class="lvtCol"><b><?php echo $mod_strings['LBL_TEMPLATE_NAME']; ?></b></th>
-		<th width="65%" class="lvtCol"><b><?php echo $mod_strings['LBL_DESCRIPTION']; ?></b></th>
+		<th width="35%" class="lvtCol"><b><?php echo getTranslatedString('LBL_TEMPLATE_NAME','Emails'); ?></b></th>
+		<th width="65%" class="lvtCol"><b><?php echo getTranslatedString('LBL_DESCRIPTION','Emails'); ?></b></th>
 		</tr>
 <?php
 $sql = "select * from vtiger_emailtemplates order by templateid desc";
@@ -38,7 +38,7 @@ $body_html_id    = (isset($_REQUEST['body_id']) ? vtlib_purify($_REQUEST['body_i
 $cnt=1;
 
 require_once('include/utils/UserInfoUtil.php');
-require('user_privileges/user_privileges_'.$current_user->id.'.php');
+$is_admin = is_admin($current_user);
 do
 {
 	$templatename = $temprow["templatename"];

@@ -12,8 +12,8 @@ class crmtogo_WS_Utils {
 
 	static function initModuleGlobals($module) {
 		global $mod_strings, $current_language;
-		if ($module == 'Events') {
-			$module = 'Calendar';
+		if ($module == 'Events' || $module == 'Calendar') {
+			$module = 'cbCalendar';
 		}
 	}
 
@@ -79,6 +79,9 @@ class crmtogo_WS_Utils {
 			case 'Documents':
 				$fieldnames = self::array_replace('title', 'notes_title', $fieldnames);
 				break;
+			case 'Timecontrol':
+				$fieldnames = array('title','product_id','totaltime','tcunits');
+				break;
 		}
 		return $fieldnames;
 	}
@@ -114,7 +117,7 @@ class crmtogo_WS_Utils {
 		if(isset(self::$detectFieldnamesToResolveCache[$module])) {
 			return self::$detectFieldnamesToResolveCache[$module];
 		}
-		$resolveUITypes = array(10, 101, 116, 117, 26, 357, 50, 51, 52, 53, 57, 59, 66, 68, 73, 75, 76, 77, 78, 80, 81);
+		$resolveUITypes = array(10, 101, 116, 117, 26, 357, 51, 52, 53, 57, 66, 68, 73, 75, 76, 77, 78, 80, 81);
 		$result = $db->pquery(
 			"SELECT fieldname FROM vtiger_field WHERE uitype IN(".generateQuestionMarks($resolveUITypes) .") AND tabid=?", array($resolveUITypes, getTabid($module))
 		);
@@ -156,10 +159,10 @@ class crmtogo_WS_Utils {
 		$fieldgroups = array();
 		while($resultrow = $db->fetch_array($result)) {
 			if (array_key_exists ($resultrow['blocklabel'], $current_module_strings)) {
-				$blocklabel = $current_module_strings[$resultrow['blocklabel']];
+				$blocklabel = $resultrow['blocklabel'];
 			}
 			else {
-				$blocklabel = getTranslatedString($resultrow['blocklabel']);
+				$blocklabel = $resultrow['blocklabel'];
 			}
 			if (array_key_exists ($resultrow['fieldlabel'], $current_module_strings)) {
 				$fieldlabel = $current_module_strings[$resultrow['fieldlabel']];
@@ -275,8 +278,8 @@ class crmtogo_WS_Utils {
 				return 16;
 			}
 		}
-		else if ($module == 'Calendar' || $module == 'Events' || $module == 'Timecontrol') {
-			if ($fieldname == 'time_start' || $fieldname == 'time_end') {
+		else if ($module == 'Timecontrol' || $module == 'cbCalendar') {
+			if ($fieldname == 'time_start' || $fieldname == 'time_end' || $fieldname == 'followupdt') {
 				// Special type for mandatory time type (not defined in product)
 				return 252;
 			}
@@ -315,14 +318,52 @@ class crmtogo_WS_Utils {
 				}
 			}
 		}
-		else if($module == 'Calendar' || $module == 'Events') {
+		else if($module == 'cbCalendar') {
+			if(isset($_REQUEST['_operation']) && $_REQUEST['_operation']=='create') {
+					//without paging per month
+					$datetimeevent=$_REQUEST['datetime'];
+					if (empty($datetimeevent)) {
+						$stdate = new DateTimeField(date("Y-m-d").' '.date("H:i"));
+						$datestoconsider ['start'] = date("Y-m-d");
+						$datestoconsider ['tstart'] = $stdate->getDisplayTime();
+						$duration = GlobalVariable::getVariable('Calendar_other_default_duration', 1, 'cbCalendar') * 60;
+						$startparts = $stdate->getDisplayDateTimeValueComponents();
+						$datetime_end = date('Y-m-d H:i:s',mktime($startparts['hour'],$startparts['minute']+$duration,$startparts['second'],$startparts['month'],$startparts['day'],$startparts['year']));
+						list($dend,$tend) = explode(' ',$datetime_end);
+						$datestoconsider ['end'] = $dend;
+						$datestoconsider ['tend'] = $tend;
+					}
+					else {
+						$strDate = substr($datetimeevent,4,11);
+						$dstart = date("Y-m-d",strtotime($strDate));
+						$stdate = new DateTimeField($dstart.' '.date("H:i"));
+						$datestoconsider ['start'] = date("Y-m-d",strtotime($strDate));
+						$datestoconsider ['tstart'] = $stdate->getDisplayTime();
+						$duration = GlobalVariable::getVariable('Calendar_other_default_duration', 1, 'cbCalendar') * 60;
+						$startparts = $stdate->getDisplayDateTimeValueComponents();
+						$datetime_end = date('Y-m-d H:i:s',mktime($startparts['hour'],$startparts['minute']+$duration,$startparts['second'],$startparts['month'],$startparts['day'],$startparts['year']));
+						list($dend,$tend) = explode(' ',$datetime_end);
+						$datestoconsider ['end'] = $dend;
+						$datestoconsider ['tend'] = $tend;
+					}
+			}
 			foreach($describeInfo['fields'] as $index => $fieldInfo) {
-				$fieldInfo['uitype'] = self::fixUIType($module, $fieldInfo['name'], $fieldInfo['uitype']);
+				if (isset($fieldInfo['uitype'])) {
+					$fieldInfo['uitype'] = self::fixUIType($module, $fieldInfo['name'], $fieldInfo['uitype']);
+				}
 				if ($fieldInfo['name'] == 'visibility') {
 					if (empty($fieldInfo['type']['picklistValues'])) {
 						$fieldInfo['type']['picklistValues'] = self::visibilityValues();
 						$fieldInfo['type']['defaultValue'] = $fieldInfo['type']['picklistValues'][0]['value'];
 					}
+				} elseif($fieldInfo['name'] == 'date_start') {
+					$fieldInfo['default'] = $datestoconsider ['start'];
+				} elseif($fieldInfo['name'] == 'time_start') {
+					$fieldInfo['default'] = $datestoconsider ['tstart'];
+				} elseif($fieldInfo['name'] == 'due_date') {
+					$fieldInfo['default'] = $datestoconsider ['end'];
+				} elseif($fieldInfo['name'] == 'time_end') {
+					$fieldInfo['default'] = $datestoconsider ['tend'];
 				}
 				$describeInfo['fields'][$index] = $fieldInfo;
 			}
@@ -366,7 +407,7 @@ class crmtogo_WS_Utils {
 						(";
 
 					// Build the query based on the group association of current user.
-			if(sizeof($current_user_groups) > 0) {
+			if (count($current_user_groups) > 0) {
 				$querySuffix .= " vtiger_groups.groupid IN (". implode(",", $current_user_groups) .") OR ";
 			}
 			$querySuffix .= " vtiger_groups.groupid IN
@@ -401,18 +442,28 @@ class crmtogo_WS_Utils {
 		$sql = "select * from vtiger_ticketcomments where ticketid=?";
 		$recordid = vtws_getIdComponents($ticket['id']);
 		$recordid = $recordid[1];
+		$recordprefix= self::getEntityModuleWSId('Users');
+		$sqluser = 'SELECT 1 FROM vtiger_users WHERE id=?';
 		$result = $db->pquery($sql, array($recordid));
-		$recordprefix= self::getEntityModuleWSId('Users') ;
 		for($i=0;$i<$db->num_rows($result);$i++) {
 			$comment = $db->query_result($result,$i,'comments');
 			if($comment != '') {
+				$crmid = $db->query_result($result,$i,'ownerid');
+				$rsusr = $db->pquery($sqluser, array($crmid));
+				if ($rsusr && $db->num_rows($rsusr)) {
+					$wsid = $recordprefix;
+				} else {
+					$setype = getSalesEntityType($crmid);
+					$wsid = self::getEntityModuleWSId($setype);
+				}
 				$commentlist[$i]['commentcontent'] = $comment;
-				$commentlist[$i]['assigned_user_id'] = $recordprefix.'x'.$db->query_result($result,$i,'ownerid');
+				$commentlist[$i]['assigned_user_id'] = $wsid.'x'.$crmid;
 				$commentlist[$i]['createdtime'] = $db->query_result($result,$i,'createdtime');
 			}
 		}
 		return $commentlist;
 	}
+
 	/**     Function to create a comment for a troubleticket
 	  *     @param int $ticketid -- troubleticket id, comments array
 	  *     returns the comment as a array
@@ -694,7 +745,7 @@ class crmtogo_WS_Utils {
 				$comments_module[] =vtlib_getModuleNameById($tabid);
 			}
 		}
-		array_push($comments_module,'HelpDesk');
+		$comments_module[] = 'HelpDesk';
 		return $comments_module;
 	}
 

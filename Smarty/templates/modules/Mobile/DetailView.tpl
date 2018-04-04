@@ -20,6 +20,7 @@
 <body>
 <div data-role="page" data-theme="b" id="detail_page">
 	<input type="hidden" name="recordid" id="recordid" value="{$_RECORD->id()}">
+	<input type="hidden" name="module" id="module" value="{$_MODULE->name()}">
 	{if $_MODULE->name() neq 'Accounts' && $_MODULE->name() neq 'Contacts'&& $_MODULE->name() neq 'Potentials' && $_MODULE->name() neq 'HelpDesk' && $_MODULE->name() neq 'Assets'}
 	<div  data-role="header" data-theme="{$COLOR_HEADER_FOOTER}" data-position="fixed">
 		{if $_MODULE->name() neq 'Quotes' AND  $_MODULE->name() neq 'SalesOrder' AND  $_MODULE->name() neq 'Invoice' AND  $_MODULE->name() neq 'PurchaseOrder' AND  $_MODULE->name() neq 'Documents' AND  $_MODULE->name() neq 'Products'}
@@ -67,16 +68,17 @@
 	{/if}
 		{foreach item=_BLOCK key=_BLOCKLABEL from=$_RECORD->blocks()}
 			{assign var=_FIELDS value=$_BLOCK->fields()}	
-			<div data-role="collapsible" data-collapsed="false" data-mini="true">
+			<div data-role="collapsible" id="{$_BLOCKLABEL}" data-collapsed="false" data-mini="true">
 				<h3>{$_BLOCKLABEL|@getTranslatedString:$_MODULE->name()}</h3>
 				{foreach item=_FIELD from=$_FIELDS}
+					<input type="hidden" name="{$_FIELD->name()}" id="{$_FIELD->name()}" value="{$_FIELD->valueLabel()}">
 					<div class="ui-grid-a">
 						<div class="ui-block-a">
-							{if $_MODULE->name() eq 'Calendar' || $_MODULE->name() eq 'Events'}
+							{if $_MODULE->name() eq 'cbCalendar'}
 								{if $_FIELD->name() eq 'date_start'}
 									{'Start Date'|@getTranslatedString:$_MODULE->name()}:
-								{elseif $_FIELD->name() neq 'reminder_time' && $_FIELD->name() neq 'recurringtype' && $_FIELD->name() neq 'duration_hours' && $_FIELD->name() neq 'duration_minutes' && $_FIELD->name() neq 'notime' && $_FIELD->name() neq 'location'}
-									{if ($_FIELD->name() neq 'eventstatus' && $_FIELD->name() neq 'taskstatus') || $_FIELD->valueLabel() neq ''}
+								{elseif $_FIELD->name() neq 'reminder_time' && $_FIELD->name() neq 'recurringtype' && $_FIELD->name() neq 'duration_hours' && $_FIELD->name() neq 'duration_minutes' && $_FIELD->name() neq 'notime' && $_FIELD->name() neq 'location' && $_FIELD->name() neq 'dtstart' && $_FIELD->name() neq 'dtend'}
+									{if ($_FIELD->name() neq 'eventstatus') || $_FIELD->valueLabel() neq ''}
 										{$_FIELD->label()}:
 									{/if}
 								{/if}
@@ -98,7 +100,7 @@
 									</a>
 								{/if}
 							{else}
-								{if ($_MODULE->name() eq 'Calendar' || $_MODULE->name() eq 'Events') && $_FIELD->name() neq 'reminder_time' && $_FIELD->name() neq 'recurringtype' && $_FIELD->name() neq 'duration_hours' && $_FIELD->name() neq 'duration_minutes' && $_FIELD->name() neq 'notime' && $_FIELD->name() neq 'location'}
+								{if $_MODULE->name() eq 'cbCalendar' && $_FIELD->name() neq 'reminder_time' && $_FIELD->name() neq 'recurringtype' && $_FIELD->name() neq 'duration_hours' && $_FIELD->name() neq 'duration_minutes' && $_FIELD->name() neq 'notime' && $_FIELD->name() neq 'location' && $_FIELD->name() neq 'dtstart' && $_FIELD->name() neq 'dtend'}
 									{if $_FIELD->name() eq 'date_start' ||$_FIELD->name() eq 'due_date'}
 										{$_FIELD->valueLabel()}
 									{else}
@@ -109,12 +111,12 @@
 												{$MOD.LBL_NO}
 											{/if}
 										{else}
-											{if ($_FIELD->name() neq 'eventstatus' && $_FIELD->name() neq 'taskstatus') || $_FIELD->valueLabel() neq ''}
+											{if $_FIELD->name() neq 'eventstatus' || $_FIELD->valueLabel() neq ''}
 												{$_FIELD->valueLabel()|@getTranslatedString:$_MODULE->name()}
 											{/if}
 										{/if}
 									{/if}
-								{elseif $_MODULE->name() neq 'Calendar' && $_MODULE->name() neq 'Events'}
+								{elseif $_MODULE->name() neq 'cbCalendar'}
 									{if $_FIELD->uitype() eq '56'}
 										{if $_FIELD->valueLabel() eq '1'}
 											{$MOD.LBL_YES}
@@ -130,12 +132,14 @@
 										{elseif $_FIELD->uitype() eq 'crm_app_map'}
 											<a  href="http://maps.google.com/maps?q={$_FIELD->valueLabel()}"  target="_blank" class="ui-btn  ui-corner-all ui-icon-location ui-btn-icon-right" data-rel="dialog">Google Maps: {$_FIELD->label()}
 											</a>
+										{elseif $_FIELD->uitype() eq '13'}
+											<a href="#" onclick="window.location.href ='mailto:{$_FIELD->valueLabel()}';">{$_FIELD->valueLabel()} </a>
 										{elseif $_FIELD->uitype() eq '5' || $_FIELD->uitype() eq '23'}
 											{$_FIELD->valueLabel()}
 										{elseif $_FIELD->uitype() eq '9'}
 											{$_FIELD->valueLabel()}{if $_FIELD->name() eq 'probability'} %{/if}
 										{elseif $_FIELD->uitype() eq '17'}
-											{$_FIELD->valueLabel()}
+											<a href="#" onclick="window.open('http://{$_FIELD->valueLabel()}','_blank');" rel=external> {$_FIELD->valueLabel()} </a>
 										{elseif $_FIELD->uitype() eq '69'}
 											<!-- do nothing here for image -->
 										{elseif $_FIELD->uitype() eq '70'}
@@ -158,6 +162,9 @@
 	</div>
 	<div data-role="footer" data-theme="{$COLOR_HEADER_FOOTER}" data-position="fixed">
 		<a href="?_operation=deleteConfirmation&module={$_MODULE->name()}&record={$_RECORD->id()}&&lang={$LANGUAGE}" class="ui-btn ui-corner-all ui-icon-delete ui-btn-icon-notext" data-rel="dialog" data-iconpos="left" data-prefetch>{$MOD.LBL_DELETE}</a>
+		{if $_MODULE->name() eq "HelpDesk" && 'Timecontrol'|vtlib_isModuleActive}
+		<a href="?_operation=create&module=Timecontrol&record=''&relatedto={$_RECORD->id()}" class="ui-btn ui-btn-right ui-corner-all ui-icon-clock ui-btn-icon-notext" rel="external" data-transition="slideup" data-iconpos="right">{$MOD.LBL_NEW}</a>
+		{/if}
 	</div>
 	{include file="modules/Mobile/PanelMenu.tpl"}
 </div>

@@ -8,7 +8,6 @@
  * All Rights Reserved.
 ********************************************************************************/
 require_once('include/database/PearDatabase.php');
-require_once('config.php');
 require_once('include/utils/MergeUtils.php');
 global $app_strings, $default_charset;
 
@@ -177,25 +176,25 @@ if(count($querycolumns) > 0)
 {
 	$selectcolumns = implode($querycolumns,",");
 
-	$query = "select  $selectcolumns from vtiger_account 
-				inner join vtiger_crmentity on vtiger_crmentity.crmid=vtiger_account.accountid 
-				inner join vtiger_accountbillads on vtiger_account.accountid=vtiger_accountbillads.accountaddressid 
-				inner join vtiger_accountshipads on vtiger_account.accountid=vtiger_accountshipads.accountaddressid 
-				inner join vtiger_accountscf on vtiger_account.accountid = vtiger_accountscf.accountid 
-				left join vtiger_account as vtiger_accountAccount on vtiger_accountAccount.accountid = vtiger_account.parentid
-				left join vtiger_users on vtiger_users.id = vtiger_crmentity.smownerid
-				LEFT JOIN vtiger_groups ON vtiger_groups.groupid = vtiger_crmentity.smownerid
-				left join vtiger_contactdetails on vtiger_contactdetails.accountid=vtiger_account.accountid
-				left join vtiger_crmentity as vtiger_crmentityContacts on vtiger_crmentityContacts.crmid = vtiger_contactdetails.contactid 
-				left join vtiger_contactaddress on vtiger_contactdetails.contactid = vtiger_contactaddress.contactaddressid 
-				left join vtiger_contactsubdetails on vtiger_contactdetails.contactid = vtiger_contactsubdetails.contactsubscriptionid 
-				left join vtiger_contactscf on vtiger_contactdetails.contactid = vtiger_contactscf.contactid 
-				left join vtiger_customerdetails on vtiger_contactdetails.contactid = vtiger_customerdetails.customerid 
-				left join vtiger_contactdetails as vtiger_contactdetailsContacts on vtiger_contactdetailsContacts.contactid = vtiger_contactdetails.reportsto
-				left join vtiger_account as vtiger_accountContacts on vtiger_accountContacts.accountid = vtiger_contactdetails.accountid 
-				left join vtiger_users as usersContacts on usersContacts.id = vtiger_crmentityContacts.smownerid
-				LEFT JOIN vtiger_groups as groupsContacts ON groupsContacts.groupid = vtiger_crmentity.smownerid
-				where vtiger_crmentity.deleted=0 and (vtiger_crmentityContacts.deleted=0 || vtiger_crmentityContacts.deleted is null) and vtiger_account.accountid in(". generateQuestionMarks($mass_merge) .")";
+	$query = "select  $selectcolumns from vtiger_account
+		inner join vtiger_crmentity on vtiger_crmentity.crmid=vtiger_account.accountid
+		inner join vtiger_accountbillads on vtiger_account.accountid=vtiger_accountbillads.accountaddressid
+		inner join vtiger_accountshipads on vtiger_account.accountid=vtiger_accountshipads.accountaddressid
+		inner join vtiger_accountscf on vtiger_account.accountid = vtiger_accountscf.accountid
+		left join vtiger_account as vtiger_accountAccount on vtiger_accountAccount.accountid = vtiger_account.parentid
+		left join vtiger_users on vtiger_users.id = vtiger_crmentity.smownerid
+		LEFT JOIN vtiger_groups ON vtiger_groups.groupid = vtiger_crmentity.smownerid
+		left join vtiger_contactdetails on vtiger_contactdetails.accountid=vtiger_account.accountid
+		left join vtiger_crmentity as vtiger_crmentityContacts on vtiger_crmentityContacts.crmid = vtiger_contactdetails.contactid
+		left join vtiger_contactaddress on vtiger_contactdetails.contactid = vtiger_contactaddress.contactaddressid
+		left join vtiger_contactsubdetails on vtiger_contactdetails.contactid = vtiger_contactsubdetails.contactsubscriptionid
+		left join vtiger_contactscf on vtiger_contactdetails.contactid = vtiger_contactscf.contactid
+		left join vtiger_customerdetails on vtiger_contactdetails.contactid = vtiger_customerdetails.customerid
+		left join vtiger_contactdetails as vtiger_contactdetailsContacts on vtiger_contactdetailsContacts.contactid = vtiger_contactdetails.reportsto
+		left join vtiger_account as vtiger_accountContacts on vtiger_accountContacts.accountid = vtiger_contactdetails.accountid
+		left join vtiger_users as usersContacts on usersContacts.id = vtiger_crmentityContacts.smownerid
+		LEFT JOIN vtiger_groups as groupsContacts ON groupsContacts.groupid = vtiger_crmentity.smownerid
+		where vtiger_crmentity.deleted=0 and (vtiger_crmentityContacts.deleted=0 || vtiger_crmentityContacts.deleted is null) and vtiger_account.accountid in(". generateQuestionMarks($mass_merge) .")";
 	$result = $adb->pquery($query, array($mass_merge));
 	$avail_pick_arr = getAccessPickListValues('Accounts');
 	while ($columnValues = $adb->fetch_array($result)) {
@@ -256,7 +255,7 @@ else if($extension == "odt")
     foreach (glob("$wordtemplatedownloadpath/*.odt") as $delefile) {
         unlink($delefile);
     }
-    if (!is_array($mass_merge)) $mass_merge = array($mass_merge);
+    $mass_merge = (array)$mass_merge;
     foreach($mass_merge as $idx => $entityid) {
         $temp_dir=entpack($filename,$wordtemplatedownloadpath,$fileContent);
         $concontent=file_get_contents($wordtemplatedownloadpath.$temp_dir.'/content.xml');
@@ -280,7 +279,7 @@ else if($extension == "rtf")
     foreach (glob("$wordtemplatedownloadpath/*.rtf") as $delefile) {
         unlink($delefile);
     }
-    if (!is_array($mass_merge)) $mass_merge = array($mass_merge);
+    $mass_merge = (array)$mass_merge;
     $filecontent = base64_decode($fileContent);
     foreach($mass_merge as $idx => $entityid) {
         $handle = fopen($wordtemplatedownloadpath.$entityid.$filename,"wb");

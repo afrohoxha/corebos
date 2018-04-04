@@ -8,48 +8,55 @@
  * All Rights Reserved.
  ************************************************************************************/
 
-require_once('include/utils/utils.php');
-require_once('include/RelatedListView.php');
-require('user_privileges/default_module_view.php');
+require_once 'include/utils/utils.php';
+require_once 'include/RelatedListView.php';
+require 'user_privileges/default_module_view.php';
 
 class Products extends CRMEntity {
-	var $db, $log; // Used in class functions of CRMEntity
+	public $db;
+	public $log;
 
-	var $table_name = 'vtiger_products';
-	var $table_index= 'productid';
-	var $column_fields = Array();
+	public $table_name = 'vtiger_products';
+	public $table_index= 'productid';
+	public $column_fields = array();
 
 	/** Indicator if this is a custom module or standard module */
-	var $IsCustomModule = false;
-	var $HasDirectImageField = true;
+	public $IsCustomModule = false;
+	public $HasDirectImageField = true;
 	/**
 	 * Mandatory table for supporting custom fields.
 	 */
-	var $customFieldTable = Array('vtiger_productcf','productid');
+	public $customFieldTable = array('vtiger_productcf','productid');
 
 	/**
 	 * Mandatory for Saving, Include tables related to this module.
 	 */
-	var $tab_name = Array('vtiger_crmentity','vtiger_products','vtiger_productcf');
+	public $tab_name = array('vtiger_crmentity', 'vtiger_products', 'vtiger_productcf');
 
 	/**
 	 * Mandatory for Saving, Include tablename and tablekey columnname here.
 	 */
-	var $tab_name_index = Array('vtiger_crmentity'=>'crmid','vtiger_products'=>'productid','vtiger_productcf'=>'productid','vtiger_seproductsrel'=>'productid','vtiger_producttaxrel'=>'productid');
+	public $tab_name_index = array(
+		'vtiger_crmentity' => 'crmid',
+		'vtiger_products' => 'productid',
+		'vtiger_productcf' => 'productid',
+		'vtiger_seproductsrel' => 'productid',
+		'vtiger_producttaxrel' => 'productid',
+	);
 
 	/**
 	 * Mandatory for Listing (Related listview)
 	 */
-	var $list_fields = Array(
-		'Product Name'=>Array('products'=>'productname'),
-		'Part Number'=>Array('products'=>'productcode'),
-		'Commission Rate'=>Array('products'=>'commissionrate'),
-		'Product Category'=>Array('products'=>'productcategory'),
-		'Vendor Name'=>Array('products'=>'vendor_id'),
-		'Qty/Unit'=>Array('products'=>'qty_per_unit'),
-		'Unit Price'=>Array('products'=>'unit_price')
+	public $list_fields = array(
+		'Product Name'=>array('products'=>'productname'),
+		'Part Number'=>array('products'=>'productcode'),
+		'Commission Rate'=>array('products'=>'commissionrate'),
+		'Product Category'=>array('products'=>'productcategory'),
+		'Vendor Name'=>array('products'=>'vendor_id'),
+		'Qty/Unit'=>array('products'=>'qty_per_unit'),
+		'Unit Price'=>array('products'=>'unit_price')
 	);
-	var $list_fields_name = Array(
+	public $list_fields_name = array(
 		'Product Name'=>'productname',
 		'Part Number'=>'productcode',
 		'Commission Rate'=>'commissionrate',
@@ -60,17 +67,17 @@ class Products extends CRMEntity {
 	);
 
 	// Make the field link to detail view from list view (Fieldname)
-	var $list_link_field= 'productname';
+	public $list_link_field= 'productname';
 
 	// For Popup listview and UI type support
-	var $search_fields = Array(
-		'Product Name'=>Array('products'=>'productname'),
-		'Part Number'=>Array('products'=>'productcode'),
-		'Product Category'=>Array('products'=>'productcategory'),
-		'Vendor Name'=>Array('products'=>'vendor_id'),
-		'Unit Price'=>Array('products'=>'unit_price')
+	public $search_fields = array(
+		'Product Name'=>array('products'=>'productname'),
+		'Part Number'=>array('products'=>'productcode'),
+		'Product Category'=>array('products'=>'productcategory'),
+		'Vendor Name'=>array('products'=>'vendor_id'),
+		'Unit Price'=>array('products'=>'unit_price')
 	);
-	var $search_fields_name = Array(
+	public $search_fields_name = array(
 		'Product Name'=>'productname',
 		'Part Number'=>'productcode',
 		'Product Category'=>'productcategory',
@@ -79,29 +86,29 @@ class Products extends CRMEntity {
 	);
 
 	// For Popup window record selection
-	var $popup_fields = Array('productname');
+	public $popup_fields = array('productname');
 
 	// Placeholder for sort fields - All the fields will be initialized for Sorting through initSortFields
-	var $sortby_fields = Array();
+	public $sortby_fields = array();
 
 	// For Alphabetical search
-	var $def_basicsearch_col = 'productname';
+	public $def_basicsearch_col = 'productname';
 
 	// Column value to use on detail view record text display
-	var $def_detailview_recname = 'productname';
+	public $def_detailview_recname = 'productname';
 
 	// Required Information for enabling Import feature
-	var $required_fields = Array('productname'=>1);
+	public $required_fields = array('productname'=>1);
 
-	var $default_order_by = 'productname';
-	var $default_sort_order='ASC';
+	public $default_order_by = 'productname';
+	public $default_sort_order='ASC';
 	// Used when enabling/disabling the mandatory fields for the module.
 	// Refers to vtiger_field.fieldname values.
-	var $mandatory_fields = Array('createdtime', 'modifiedtime', 'productname', 'assigned_user_id');
-	 // Josh added for importing and exporting -added in patch2
-	var $unit_price;
+	public $mandatory_fields = array('createdtime', 'modifiedtime', 'productname');
 
-	function __construct() {
+	public $unit_price; // for importing/exporting
+
+	public function __construct() {
 		global $log;
 		$this_module = get_class($this);
 		$this->column_fields = getColumnFields($this_module);
@@ -109,14 +116,13 @@ class Products extends CRMEntity {
 		$this->log = $log;
 	}
 
-	function save_module($module)
-	{
-		//Inserting into product_taxrel table
-		if ((empty($_REQUEST['ajxaction']) || $_REQUEST['ajxaction'] != 'DETAILVIEW') && $_REQUEST['action'] != 'MassEditSave' && $_REQUEST['action'] != 'ProcessDuplicates')
-		{
+	public function save_module($module) {
+		if ((empty($_REQUEST['ajxaction']) || $_REQUEST['ajxaction'] != 'DETAILVIEW')
+			&& (empty($_REQUEST['action']) || ($_REQUEST['action'] != 'MassEditSave' && $_REQUEST['action'] != 'ProcessDuplicates'))
+		) {
 			$this->insertPriceInformation('vtiger_productcurrencyrel', 'Products');
 		}
-		if ((empty($_REQUEST['ajxaction']) || $_REQUEST['ajxaction'] != 'DETAILVIEW') && $_REQUEST['action'] != 'ProcessDuplicates') {
+		if ((empty($_REQUEST['ajxaction']) || $_REQUEST['ajxaction'] != 'DETAILVIEW') && (empty($_REQUEST['action']) || $_REQUEST['action'] != 'ProcessDuplicates')) {
 			$this->insertTaxInformation('vtiger_producttaxrel', 'Products');
 		}
 
@@ -140,8 +146,7 @@ class Products extends CRMEntity {
 	 *	@param string $module	 - current module name
 	 *	$return void
 	*/
-	function insertTaxInformation($tablename, $module)
-	{
+	public function insertTaxInformation($tablename, $module) {
 		global $adb, $log;
 		$log->debug("Entering into insertTaxInformation($tablename, $module) method ...");
 		$tax_details = getAllTaxes();
@@ -149,21 +154,19 @@ class Products extends CRMEntity {
 		$tax_per = '';
 		//Save the Product - tax relationship if corresponding tax check box is enabled
 		//Delete the existing tax if any
-		if($this->mode == 'edit')
-		{
-			for($i=0;$i<count($tax_details);$i++)
-			{
+		if ($this->mode == 'edit') {
+			for ($i=0;$i<count($tax_details);$i++) {
 				$tax_checkname = $tax_details[$i]['taxname']."_check";
-				if($_REQUEST['action'] == 'MassEditSave') { // then we only modify the marked taxes
-					if (($_REQUEST[$tax_checkname] == 'on' || $_REQUEST[$tax_checkname] == 1)) {
+				if ($_REQUEST['action'] == 'MassEditSave') { // then we only modify the marked taxes
+					if (isset($_REQUEST[$tax_checkname]) and ($_REQUEST[$tax_checkname] == 'on' || $_REQUEST[$tax_checkname] == 1)) {
 						$taxid = getTaxId($tax_details[$i]['taxname']);
 						$sql = "delete from vtiger_producttaxrel where productid=? and taxid=?";
 						$adb->pquery($sql, array($this->id,$taxid));
 					}
 				} else {
-				$taxid = getTaxId($tax_details[$i]['taxname']);
-				$sql = "delete from vtiger_producttaxrel where productid=? and taxid=?";
-				$adb->pquery($sql, array($this->id,$taxid));
+					$taxid = getTaxId($tax_details[$i]['taxname']);
+					$sql = "delete from vtiger_producttaxrel where productid=? and taxid=?";
+					$adb->pquery($sql, array($this->id,$taxid));
 				}
 			}
 		}
@@ -196,8 +199,7 @@ class Products extends CRMEntity {
 	 *	@param string $module	 - current module name
 	 *	$return void
 	*/
-	function insertPriceInformation($tablename, $module)
-	{
+	public function insertPriceInformation($tablename, $module) {
 		global $adb, $log, $current_user;
 		$log->debug("Entering into insertPriceInformation($tablename, $module) method ...");
 		//removed the update of currency_id based on the logged in user's preference : fix 6490
@@ -248,7 +250,7 @@ class Products extends CRMEntity {
 		$log->debug("Exiting from insertPriceInformation($tablename, $module) method ...");
 	}
 
-	function updateUnitPrice() {
+	public function updateUnitPrice() {
 		$prod_res = $this->db->pquery("select unit_price, currency_id from vtiger_products where productid=?", array($this->id));
 		$prod_unit_price = $this->db->query_result($prod_res, 0, 'unit_price');
 		$prod_base_currency = $this->db->query_result($prod_res, 0, 'currency_id');
@@ -258,32 +260,28 @@ class Products extends CRMEntity {
 		$this->db->pquery($query, $params);
 	}
 
-	function insertIntoAttachment($id,$module, $direct_import=false)
-	{
+	public function insertIntoAttachment($id,$module, $direct_import=false) {
 		global $log, $adb;
 		$log->debug("Entering into insertIntoAttachment($id,$module) method.");
 
 		$file_saved = false;
-
-		foreach($_FILES as $fileindex => $files)
-		{
-			if($files['name'] != '' && $files['size'] > 0)
-			{
-				if($_REQUEST[$fileindex.'_hidden'] != '')
+		foreach ($_FILES as $fileindex => $files) {
+			if (substr($fileindex,0,5)!='file_' and !($fileindex=='file' and $_REQUEST['action']=='ProductsAjax' and $_REQUEST['file']=='UploadImage')) continue;
+			if ($files['name'] != '' && $files['size'] > 0) {
+				if (!empty($_REQUEST[$fileindex.'_hidden']))
 					$files['original_name'] = vtlib_purify($_REQUEST[$fileindex.'_hidden']);
 				else
 					$files['original_name'] = stripslashes($files['name']);
 				$files['original_name'] = str_replace('"','',$files['original_name']);
-				$file_saved = $this->uploadAndSaveFile($id,$module,$files);
+				$file_saved = $this->uploadAndSaveFile($id,$module,$files,'',$direct_import,'imagename');
 			}
+			unset($_FILES[$fileindex]);
 		}
 
-		//Remove the deleted vtiger_attachments from db - Products
-		if($module == 'Products' && $_REQUEST['del_file_list'] != '')
-		{
+		// Remove the deleted attachments from db
+		if (!empty($_REQUEST['del_file_list'])) {
 			$del_file_list = explode("###",trim($_REQUEST['del_file_list'],"###"));
-			foreach($del_file_list as $del_file_name)
-			{
+			foreach ($del_file_list as $del_file_name) {
 				$attach_res = $adb->pquery("select vtiger_attachments.attachmentsid from vtiger_attachments inner join vtiger_seattachmentsrel on vtiger_attachments.attachmentsid=vtiger_seattachmentsrel.attachmentsid where crmid=? and name=?", array($id,$del_file_name));
 				$attachments_id = $adb->query_result($attach_res,0,'attachmentsid');
 
@@ -292,16 +290,17 @@ class Products extends CRMEntity {
 			}
 		}
 
+		if (count($_FILES)>0) {
+			parent::insertIntoAttachment($id, $module, $direct_import);
+		}
 		$log->debug("Exiting from insertIntoAttachment($id,$module) method.");
 	}
-
-
 
 	/**	function used to get the list of leads which are related to the product
 	 *	@param int $id - product id
 	 *	@return array - array which will be returned from the function GetRelatedList
 	 */
-	function get_leads($id, $cur_tab_id, $rel_tab_id, $actions=false) {
+	public function get_leads($id, $cur_tab_id, $rel_tab_id, $actions=false) {
 		global $log, $singlepane_view,$currentModule,$current_user;
 		$log->debug("Entering get_leads(".$id.") method ...");
 		$this_module = $currentModule;
@@ -309,7 +308,6 @@ class Products extends CRMEntity {
 		$related_module = vtlib_getModuleNameById($rel_tab_id);
 		require_once("modules/$related_module/$related_module.php");
 		$other = new $related_module();
-		$singular_modname = vtlib_toSingular($related_module);
 
 		$parenttab = getParentTab();
 
@@ -323,12 +321,13 @@ class Products extends CRMEntity {
 		if($actions) {
 			if(is_string($actions)) $actions = explode(',', strtoupper($actions));
 			if(in_array('SELECT', $actions) && isPermitted($related_module,4, '') == 'yes') {
-				$button .= "<input title='".getTranslatedString('LBL_SELECT')." ". getTranslatedString($related_module). "' class='crmbutton small edit' type='button' onclick=\"return window.open('index.php?module=$related_module&return_module=$currentModule&action=Popup&popuptype=detailview&select=enable&form=EditView&form_submit=false&recordid=$id&parenttab=$parenttab','test','width=640,height=602,resizable=0,scrollbars=0');\" value='". getTranslatedString('LBL_SELECT'). " " . getTranslatedString($related_module) ."'>&nbsp;";
+				$button .= "<input title='".getTranslatedString('LBL_SELECT')." ". getTranslatedString($related_module, $related_module). "' class='crmbutton small edit' type='button' onclick=\"return window.open('index.php?module=$related_module&return_module=$currentModule&action=Popup&popuptype=detailview&select=enable&form=EditView&form_submit=false&recordid=$id&parenttab=$parenttab','test','width=640,height=602,resizable=0,scrollbars=0');\" value='". getTranslatedString('LBL_SELECT'). " " . getTranslatedString($related_module, $related_module) ."'>&nbsp;";
 			}
 			if(in_array('ADD', $actions) && isPermitted($related_module,1, '') == 'yes') {
-				$button .= "<input title='".getTranslatedString('LBL_ADD_NEW'). " ". getTranslatedString($singular_modname) ."' class='crmbutton small create'" .
+				$singular_modname = getTranslatedString('SINGLE_' . $related_module, $related_module);
+				$button .= "<input title='".getTranslatedString('LBL_ADD_NEW'). " ". $singular_modname ."' class='crmbutton small create'" .
 					" onclick='this.form.action.value=\"EditView\";this.form.module.value=\"$related_module\"' type='submit' name='button'" .
-					" value='". getTranslatedString('LBL_ADD_NEW'). " " . getTranslatedString($singular_modname) ."'>&nbsp;";
+					" value='". getTranslatedString('LBL_ADD_NEW'). " " . $singular_modname ."'>&nbsp;";
 			}
 		}
 
@@ -346,7 +345,7 @@ class Products extends CRMEntity {
 
 		$return_value = GetRelatedList($this_module, $related_module, $other, $query, $button, $returnset);
 
-		if($return_value == null) $return_value = Array();
+		if($return_value == null) $return_value = array();
 		$return_value['CUSTOM_BUTTON'] = $button;
 
 		$log->debug("Exiting get_leads method ...");
@@ -357,7 +356,7 @@ class Products extends CRMEntity {
 	 *	@param int $id - product id
 	 *	@return array - array which will be returned from the function GetRelatedList
 	 */
-	function get_accounts($id, $cur_tab_id, $rel_tab_id, $actions=false) {
+	public function get_accounts($id, $cur_tab_id, $rel_tab_id, $actions=false) {
 		global $log, $singlepane_view,$currentModule,$current_user;
 		$log->debug("Entering get_accounts(".$id.") method ...");
 		$this_module = $currentModule;
@@ -365,7 +364,6 @@ class Products extends CRMEntity {
 		$related_module = vtlib_getModuleNameById($rel_tab_id);
 		require_once("modules/$related_module/$related_module.php");
 		$other = new $related_module();
-		$singular_modname = vtlib_toSingular($related_module);
 
 		$parenttab = getParentTab();
 
@@ -379,12 +377,13 @@ class Products extends CRMEntity {
 		if($actions) {
 			if(is_string($actions)) $actions = explode(',', strtoupper($actions));
 			if(in_array('SELECT', $actions) && isPermitted($related_module,4, '') == 'yes') {
-				$button .= "<input title='".getTranslatedString('LBL_SELECT')." ". getTranslatedString($related_module). "' class='crmbutton small edit' type='button' onclick=\"return window.open('index.php?module=$related_module&return_module=$currentModule&action=Popup&popuptype=detailview&select=enable&form=EditView&form_submit=false&recordid=$id&parenttab=$parenttab','test','width=640,height=602,resizable=0,scrollbars=0');\" value='". getTranslatedString('LBL_SELECT'). " " . getTranslatedString($related_module) ."'>&nbsp;";
+				$button .= "<input title='".getTranslatedString('LBL_SELECT')." ". getTranslatedString($related_module, $related_module). "' class='crmbutton small edit' type='button' onclick=\"return window.open('index.php?module=$related_module&return_module=$currentModule&action=Popup&popuptype=detailview&select=enable&form=EditView&form_submit=false&recordid=$id&parenttab=$parenttab','test','width=640,height=602,resizable=0,scrollbars=0');\" value='". getTranslatedString('LBL_SELECT'). " " . getTranslatedString($related_module, $related_module) ."'>&nbsp;";
 			}
 			if(in_array('ADD', $actions) && isPermitted($related_module,1, '') == 'yes') {
-				$button .= "<input title='".getTranslatedString('LBL_ADD_NEW'). " ". getTranslatedString($singular_modname) ."' class='crmbutton small create'" .
+				$singular_modname = getTranslatedString('SINGLE_' . $related_module, $related_module);
+				$button .= "<input title='".getTranslatedString('LBL_ADD_NEW'). " ". $singular_modname ."' class='crmbutton small create'" .
 					" onclick='this.form.action.value=\"EditView\";this.form.module.value=\"$related_module\"' type='submit' name='button'" .
-					" value='". getTranslatedString('LBL_ADD_NEW'). " " . getTranslatedString($singular_modname) ."'>&nbsp;";
+					" value='". getTranslatedString('LBL_ADD_NEW'). " " . $singular_modname ."'>&nbsp;";
 			}
 		}
 
@@ -401,7 +400,7 @@ class Products extends CRMEntity {
 
 		$return_value = GetRelatedList($this_module, $related_module, $other, $query, $button, $returnset);
 
-		if($return_value == null) $return_value = Array();
+		if($return_value == null) $return_value = array();
 		$return_value['CUSTOM_BUTTON'] = $button;
 
 		$log->debug("Exiting get_accounts method ...");
@@ -412,7 +411,7 @@ class Products extends CRMEntity {
 	 *	@param int $id - product id
 	 *	@return array - array which will be returned from the function GetRelatedList
 	 */
-	function get_contacts($id, $cur_tab_id, $rel_tab_id, $actions=false) {
+	public function get_contacts($id, $cur_tab_id, $rel_tab_id, $actions=false) {
 		global $log, $singlepane_view,$currentModule,$current_user;
 		$log->debug("Entering get_contacts(".$id.") method ...");
 		$this_module = $currentModule;
@@ -420,7 +419,6 @@ class Products extends CRMEntity {
 		$related_module = vtlib_getModuleNameById($rel_tab_id);
 		require_once("modules/$related_module/$related_module.php");
 		$other = new $related_module();
-		$singular_modname = vtlib_toSingular($related_module);
 
 		$parenttab = getParentTab();
 
@@ -434,12 +432,13 @@ class Products extends CRMEntity {
 		if($actions) {
 			if(is_string($actions)) $actions = explode(',', strtoupper($actions));
 			if(in_array('SELECT', $actions) && isPermitted($related_module,4, '') == 'yes') {
-				$button .= "<input title='".getTranslatedString('LBL_SELECT')." ". getTranslatedString($related_module). "' class='crmbutton small edit' type='button' onclick=\"return window.open('index.php?module=$related_module&return_module=$currentModule&action=Popup&popuptype=detailview&select=enable&form=EditView&form_submit=false&recordid=$id&parenttab=$parenttab','test','width=640,height=602,resizable=0,scrollbars=0');\" value='". getTranslatedString('LBL_SELECT'). " " . getTranslatedString($related_module) ."'>&nbsp;";
+				$button .= "<input title='".getTranslatedString('LBL_SELECT')." ". getTranslatedString($related_module, $related_module). "' class='crmbutton small edit' type='button' onclick=\"return window.open('index.php?module=$related_module&return_module=$currentModule&action=Popup&popuptype=detailview&select=enable&form=EditView&form_submit=false&recordid=$id&parenttab=$parenttab','test','width=640,height=602,resizable=0,scrollbars=0');\" value='". getTranslatedString('LBL_SELECT'). " " . getTranslatedString($related_module, $related_module) ."'>&nbsp;";
 			}
 			if(in_array('ADD', $actions) && isPermitted($related_module,1, '') == 'yes') {
-				$button .= "<input title='".getTranslatedString('LBL_ADD_NEW'). " ". getTranslatedString($singular_modname) ."' class='crmbutton small create'" .
+				$singular_modname = getTranslatedString('SINGLE_' . $related_module, $related_module);
+				$button .= "<input title='".getTranslatedString('LBL_ADD_NEW'). " ". $singular_modname ."' class='crmbutton small create'" .
 					" onclick='this.form.action.value=\"EditView\";this.form.module.value=\"$related_module\"' type='submit' name='button'" .
-					" value='". getTranslatedString('LBL_ADD_NEW'). " " . getTranslatedString($singular_modname) ."'>&nbsp;";
+					" value='". getTranslatedString('LBL_ADD_NEW'). " " . $singular_modname ."'>&nbsp;";
 			}
 		}
 
@@ -459,7 +458,7 @@ class Products extends CRMEntity {
 
 		$return_value = GetRelatedList($this_module, $related_module, $other, $query, $button, $returnset);
 
-		if($return_value == null) $return_value = Array();
+		if($return_value == null) $return_value = array();
 		$return_value['CUSTOM_BUTTON'] = $button;
 
 		$log->debug("Exiting get_contacts method ...");
@@ -471,7 +470,7 @@ class Products extends CRMEntity {
 	 *	@param int $id - product id
 	 *	@return array - array which will be returned from the function GetRelatedList
 	 */
-	function get_opportunities($id, $cur_tab_id, $rel_tab_id, $actions=false) {
+	public function get_opportunities($id, $cur_tab_id, $rel_tab_id, $actions=false) {
 		global $log, $singlepane_view,$currentModule,$current_user;
 		$log->debug("Entering get_opportunities(".$id.") method ...");
 		$this_module = $currentModule;
@@ -479,7 +478,6 @@ class Products extends CRMEntity {
 		$related_module = vtlib_getModuleNameById($rel_tab_id);
 		require_once("modules/$related_module/$related_module.php");
 		$other = new $related_module();
-		$singular_modname = vtlib_toSingular($related_module);
 
 		$parenttab = getParentTab();
 
@@ -493,12 +491,13 @@ class Products extends CRMEntity {
 		if($actions) {
 			if(is_string($actions)) $actions = explode(',', strtoupper($actions));
 			if(in_array('SELECT', $actions) && isPermitted($related_module,4, '') == 'yes') {
-				$button .= "<input title='".getTranslatedString('LBL_SELECT')." ". getTranslatedString($related_module). "' class='crmbutton small edit' type='button' onclick=\"return window.open('index.php?module=$related_module&return_module=$currentModule&action=Popup&popuptype=detailview&select=enable&form=EditView&form_submit=false&recordid=$id&parenttab=$parenttab','test','width=640,height=602,resizable=0,scrollbars=0');\" value='". getTranslatedString('LBL_SELECT'). " " . getTranslatedString($related_module) ."'>&nbsp;";
+				$button .= "<input title='".getTranslatedString('LBL_SELECT')." ". getTranslatedString($related_module, $related_module). "' class='crmbutton small edit' type='button' onclick=\"return window.open('index.php?module=$related_module&return_module=$currentModule&action=Popup&popuptype=detailview&select=enable&form=EditView&form_submit=false&recordid=$id&parenttab=$parenttab','test','width=640,height=602,resizable=0,scrollbars=0');\" value='". getTranslatedString('LBL_SELECT'). " " . getTranslatedString($related_module, $related_module) ."'>&nbsp;";
 			}
 			if(in_array('ADD', $actions) && isPermitted($related_module,1, '') == 'yes') {
-				$button .= "<input title='".getTranslatedString('LBL_ADD_NEW'). " ". getTranslatedString($singular_modname) ."' class='crmbutton small create'" .
+				$singular_modname = getTranslatedString('SINGLE_' . $related_module, $related_module);
+				$button .= "<input title='".getTranslatedString('LBL_ADD_NEW'). " ". $singular_modname ."' class='crmbutton small create'" .
 					" onclick='this.form.action.value=\"EditView\";this.form.module.value=\"$related_module\"' type='submit' name='button'" .
-					" value='". getTranslatedString('LBL_ADD_NEW'). " " . getTranslatedString($singular_modname) ."'>&nbsp;";
+					" value='". getTranslatedString('LBL_ADD_NEW'). " " . $singular_modname ."'>&nbsp;";
 			}
 		}
 
@@ -523,7 +522,7 @@ class Products extends CRMEntity {
 
 		$return_value = GetRelatedList($this_module, $related_module, $other, $query, $button, $returnset);
 
-		if($return_value == null) $return_value = Array();
+		if($return_value == null) $return_value = array();
 		$return_value['CUSTOM_BUTTON'] = $button;
 
 		$log->debug("Exiting get_opportunities method ...");
@@ -534,7 +533,7 @@ class Products extends CRMEntity {
 	 *	@param int $id - product id
 	 *	@return array - array which will be returned from the function GetRelatedList
 	 */
-	function get_tickets($id, $cur_tab_id, $rel_tab_id, $actions=false) {
+	public function get_tickets($id, $cur_tab_id, $rel_tab_id, $actions=false) {
 		global $log, $singlepane_view,$currentModule,$current_user;
 		$log->debug("Entering get_tickets(".$id.") method ...");
 		$this_module = $currentModule;
@@ -542,7 +541,6 @@ class Products extends CRMEntity {
 		$related_module = vtlib_getModuleNameById($rel_tab_id);
 		require_once("modules/$related_module/$related_module.php");
 		$other = new $related_module();
-		$singular_modname = vtlib_toSingular($related_module);
 
 		$parenttab = getParentTab();
 
@@ -556,12 +554,13 @@ class Products extends CRMEntity {
 		if($actions && getFieldVisibilityPermission($related_module, $current_user->id, 'product_id','readwrite') == '0') {
 			if(is_string($actions)) $actions = explode(',', strtoupper($actions));
 			if(in_array('SELECT', $actions) && isPermitted($related_module,4, '') == 'yes') {
-				$button .= "<input title='".getTranslatedString('LBL_SELECT')." ". getTranslatedString($related_module). "' class='crmbutton small edit' type='button' onclick=\"return window.open('index.php?module=$related_module&return_module=$currentModule&action=Popup&popuptype=detailview&select=enable&form=EditView&form_submit=false&recordid=$id&parenttab=$parenttab','test','width=640,height=602,resizable=0,scrollbars=0');\" value='". getTranslatedString('LBL_SELECT'). " " . getTranslatedString($related_module) ."'>&nbsp;";
+				$button .= "<input title='".getTranslatedString('LBL_SELECT')." ". getTranslatedString($related_module, $related_module). "' class='crmbutton small edit' type='button' onclick=\"return window.open('index.php?module=$related_module&return_module=$currentModule&action=Popup&popuptype=detailview&select=enable&form=EditView&form_submit=false&recordid=$id&parenttab=$parenttab','test','width=640,height=602,resizable=0,scrollbars=0');\" value='". getTranslatedString('LBL_SELECT'). " " . getTranslatedString($related_module, $related_module) ."'>&nbsp;";
 			}
 			if(in_array('ADD', $actions) && isPermitted($related_module,1, '') == 'yes') {
-				$button .= "<input title='".getTranslatedString('LBL_ADD_NEW'). " ". getTranslatedString($singular_modname) ."' class='crmbutton small create'" .
+				$singular_modname = getTranslatedString('SINGLE_' . $related_module, $related_module);
+				$button .= "<input title='".getTranslatedString('LBL_ADD_NEW'). " ". $singular_modname ."' class='crmbutton small create'" .
 					" onclick='this.form.action.value=\"EditView\";this.form.module.value=\"$related_module\"' type='submit' name='button'" .
-					" value='". getTranslatedString('LBL_ADD_NEW'). " " . getTranslatedString($singular_modname) ."'>&nbsp;";
+					" value='". getTranslatedString('LBL_ADD_NEW'). " " . $singular_modname ."'>&nbsp;";
 			}
 		}
 
@@ -586,73 +585,18 @@ class Products extends CRMEntity {
 
 		$return_value = GetRelatedList($this_module, $related_module, $other, $query, $button, $returnset);
 
-		if($return_value == null) $return_value = Array();
+		if($return_value == null) $return_value = array();
 		$return_value['CUSTOM_BUTTON'] = $button;
 
 		$log->debug("Exiting get_tickets method ...");
 		return $return_value;
 	}
 
-	/**	function used to get the list of activities which are related to the product
-	 *	@param int $id - product id
-	 *	@return array - array which will be returned from the function GetRelatedList
-	 */
-	function get_activities($id)
-	{
-		global $log, $singlepane_view;
-		$log->debug("Entering get_activities(".$id.") method ...");
-		global $app_strings;
-
-		require_once('modules/Calendar/Activity.php');
-
-		//if($this->column_fields['contact_id']!=0 && $this->column_fields['contact_id']!='')
-		$focus = new Activity();
-
-		$button = '';
-
-		if($singlepane_view == 'true')
-			$returnset = '&return_module=Products&return_action=DetailView&return_id='.$id;
-		else
-			$returnset = '&return_module=Products&return_action=CallRelatedList&return_id='.$id;
-
-
-		$userNameSql = getSqlForNameInDisplayFormat(array('first_name'=>
-							'vtiger_users.first_name', 'last_name' => 'vtiger_users.last_name'), 'Users');
-		$query = "SELECT vtiger_contactdetails.lastname,
-			vtiger_contactdetails.firstname,
-			vtiger_contactdetails.contactid,
-			vtiger_activity.*,
-			vtiger_seactivityrel.crmid as parent_id,
-			vtiger_crmentity.crmid, vtiger_crmentity.smownerid,
-			vtiger_crmentity.modifiedtime,
-			$userNameSql,
-			vtiger_recurringevents.recurringtype
-			FROM vtiger_activity
-			INNER JOIN vtiger_seactivityrel
-				ON vtiger_seactivityrel.activityid = vtiger_activity.activityid
-			INNER JOIN vtiger_crmentity
-				ON vtiger_crmentity.crmid=vtiger_activity.activityid
-			LEFT JOIN vtiger_cntactivityrel
-				ON vtiger_cntactivityrel.activityid = vtiger_activity.activityid
-			LEFT JOIN vtiger_contactdetails
-				ON vtiger_contactdetails.contactid = vtiger_cntactivityrel.contactid
-			LEFT JOIN vtiger_users
-				ON vtiger_users.id = vtiger_crmentity.smownerid
-			LEFT OUTER JOIN vtiger_recurringevents
-				ON vtiger_recurringevents.activityid = vtiger_activity.activityid
-			LEFT JOIN vtiger_groups
-				ON vtiger_groups.groupid = vtiger_crmentity.smownerid
-			WHERE vtiger_seactivityrel.crmid=".$id."
-			AND (activitytype != 'Emails')";
-		$log->debug("Exiting get_activities method ...");
-		return GetRelatedList('Products','Calendar',$focus,$query,$button,$returnset);
-	}
-
 	/**	function used to get the list of quotes which are related to the product
 	 *	@param int $id - product id
 	 *	@return array - array which will be returned from the function GetRelatedList
 	 */
-	function get_quotes($id, $cur_tab_id, $rel_tab_id, $actions=false) {
+	public function get_quotes($id, $cur_tab_id, $rel_tab_id, $actions=false) {
 		global $log, $singlepane_view,$currentModule,$current_user;
 		$log->debug("Entering get_quotes(".$id.") method ...");
 		$this_module = $currentModule;
@@ -660,7 +604,6 @@ class Products extends CRMEntity {
 		$related_module = vtlib_getModuleNameById($rel_tab_id);
 		require_once("modules/$related_module/$related_module.php");
 		$other = new $related_module();
-		$singular_modname = vtlib_toSingular($related_module);
 
 		$parenttab = getParentTab();
 
@@ -674,12 +617,13 @@ class Products extends CRMEntity {
 		if($actions) {
 			if(is_string($actions)) $actions = explode(',', strtoupper($actions));
 			if(in_array('SELECT', $actions) && isPermitted($related_module,4, '') == 'yes') {
-				$button .= "<input title='".getTranslatedString('LBL_SELECT')." ". getTranslatedString($related_module). "' class='crmbutton small edit' type='button' onclick=\"return window.open('index.php?module=$related_module&return_module=$currentModule&action=Popup&popuptype=detailview&select=enable&form=EditView&form_submit=false&recordid=$id&parenttab=$parenttab','test','width=640,height=602,resizable=0,scrollbars=0');\" value='". getTranslatedString('LBL_SELECT'). " " . getTranslatedString($related_module) ."'>&nbsp;";
+				$button .= "<input title='".getTranslatedString('LBL_SELECT')." ". getTranslatedString($related_module, $related_module). "' class='crmbutton small edit' type='button' onclick=\"return window.open('index.php?module=$related_module&return_module=$currentModule&action=Popup&popuptype=detailview&select=enable&form=EditView&form_submit=false&recordid=$id&parenttab=$parenttab','test','width=640,height=602,resizable=0,scrollbars=0');\" value='". getTranslatedString('LBL_SELECT'). " " . getTranslatedString($related_module, $related_module) ."'>&nbsp;";
 			}
 			if(in_array('ADD', $actions) && isPermitted($related_module,1, '') == 'yes') {
-				$button .= "<input title='".getTranslatedString('LBL_ADD_NEW'). " ". getTranslatedString($singular_modname) ."' class='crmbutton small create'" .
+				$singular_modname = getTranslatedString('SINGLE_' . $related_module, $related_module);
+				$button .= "<input title='".getTranslatedString('LBL_ADD_NEW'). " ". $singular_modname ."' class='crmbutton small create'" .
 					" onclick='this.form.action.value=\"EditView\";this.form.module.value=\"$related_module\"' type='submit' name='button'" .
-					" value='". getTranslatedString('LBL_ADD_NEW'). " " . getTranslatedString($singular_modname) ."'>&nbsp;";
+					" value='". getTranslatedString('LBL_ADD_NEW'). " " . $singular_modname ."'>&nbsp;";
 			}
 		}
 
@@ -708,7 +652,7 @@ class Products extends CRMEntity {
 
 		$return_value = GetRelatedList($this_module, $related_module, $other, $query, $button, $returnset);
 
-		if($return_value == null) $return_value = Array();
+		if($return_value == null) $return_value = array();
 		$return_value['CUSTOM_BUTTON'] = $button;
 
 		$log->debug("Exiting get_quotes method ...");
@@ -719,7 +663,7 @@ class Products extends CRMEntity {
 	 *	@param int $id - product id
 	 *	@return array - array which will be returned from the function GetRelatedList
 	 */
-	function get_purchase_orders($id, $cur_tab_id, $rel_tab_id, $actions=false) {
+	public function get_purchase_orders($id, $cur_tab_id, $rel_tab_id, $actions=false) {
 		global $log, $singlepane_view,$currentModule,$current_user;
 		$log->debug("Entering get_purchase_orders(".$id.") method ...");
 		$this_module = $currentModule;
@@ -727,7 +671,6 @@ class Products extends CRMEntity {
 		$related_module = vtlib_getModuleNameById($rel_tab_id);
 		require_once("modules/$related_module/$related_module.php");
 		$other = new $related_module();
-		$singular_modname = vtlib_toSingular($related_module);
 
 		$parenttab = getParentTab();
 
@@ -741,12 +684,13 @@ class Products extends CRMEntity {
 		if($actions) {
 			if(is_string($actions)) $actions = explode(',', strtoupper($actions));
 			if(in_array('SELECT', $actions) && isPermitted($related_module,4, '') == 'yes') {
-				$button .= "<input title='".getTranslatedString('LBL_SELECT')." ". getTranslatedString($related_module). "' class='crmbutton small edit' type='button' onclick=\"return window.open('index.php?module=$related_module&return_module=$currentModule&action=Popup&popuptype=detailview&select=enable&form=EditView&form_submit=false&recordid=$id&parenttab=$parenttab','test','width=640,height=602,resizable=0,scrollbars=0');\" value='". getTranslatedString('LBL_SELECT'). " " . getTranslatedString($related_module) ."'>&nbsp;";
+				$button .= "<input title='".getTranslatedString('LBL_SELECT')." ". getTranslatedString($related_module, $related_module). "' class='crmbutton small edit' type='button' onclick=\"return window.open('index.php?module=$related_module&return_module=$currentModule&action=Popup&popuptype=detailview&select=enable&form=EditView&form_submit=false&recordid=$id&parenttab=$parenttab','test','width=640,height=602,resizable=0,scrollbars=0');\" value='". getTranslatedString('LBL_SELECT'). " " . getTranslatedString($related_module, $related_module) ."'>&nbsp;";
 			}
 			if(in_array('ADD', $actions) && isPermitted($related_module,1, '') == 'yes') {
-				$button .= "<input title='".getTranslatedString('LBL_ADD_NEW'). " ". getTranslatedString($singular_modname) ."' class='crmbutton small create'" .
+				$singular_modname = getTranslatedString('SINGLE_' . $related_module, $related_module);
+				$button .= "<input title='".getTranslatedString('LBL_ADD_NEW'). " ". $singular_modname ."' class='crmbutton small create'" .
 					" onclick='this.form.action.value=\"EditView\";this.form.module.value=\"$related_module\"' type='submit' name='button'" .
-					" value='". getTranslatedString('LBL_ADD_NEW'). " " . getTranslatedString($singular_modname) ."'>&nbsp;";
+					" value='". getTranslatedString('LBL_ADD_NEW'). " " . $singular_modname ."'>&nbsp;";
 			}
 		}
 
@@ -774,7 +718,7 @@ class Products extends CRMEntity {
 
 		$return_value = GetRelatedList($this_module, $related_module, $other, $query, $button, $returnset);
 
-		if($return_value == null) $return_value = Array();
+		if($return_value == null) $return_value = array();
 		$return_value['CUSTOM_BUTTON'] = $button;
 
 		$log->debug("Exiting get_purchase_orders method ...");
@@ -793,7 +737,6 @@ class Products extends CRMEntity {
 		$related_module = vtlib_getModuleNameById($rel_tab_id);
 		require_once("modules/$related_module/$related_module.php");
 		$other = new $related_module();
-		$singular_modname = vtlib_toSingular($related_module);
 
 		$parenttab = getParentTab();
 
@@ -807,12 +750,13 @@ class Products extends CRMEntity {
 		if($actions) {
 			if(is_string($actions)) $actions = explode(',', strtoupper($actions));
 			if(in_array('SELECT', $actions) && isPermitted($related_module,4, '') == 'yes') {
-				$button .= "<input title='".getTranslatedString('LBL_SELECT')." ". getTranslatedString($related_module). "' class='crmbutton small edit' type='button' onclick=\"return window.open('index.php?module=$related_module&return_module=$currentModule&action=Popup&popuptype=detailview&select=enable&form=EditView&form_submit=false&recordid=$id&parenttab=$parenttab','test','width=640,height=602,resizable=0,scrollbars=0');\" value='". getTranslatedString('LBL_SELECT'). " " . getTranslatedString($related_module) ."'>&nbsp;";
+				$button .= "<input title='".getTranslatedString('LBL_SELECT')." ". getTranslatedString($related_module, $related_module). "' class='crmbutton small edit' type='button' onclick=\"return window.open('index.php?module=$related_module&return_module=$currentModule&action=Popup&popuptype=detailview&select=enable&form=EditView&form_submit=false&recordid=$id&parenttab=$parenttab','test','width=640,height=602,resizable=0,scrollbars=0');\" value='". getTranslatedString('LBL_SELECT'). " " . getTranslatedString($related_module, $related_module) ."'>&nbsp;";
 			}
 			if(in_array('ADD', $actions) && isPermitted($related_module,1, '') == 'yes') {
-				$button .= "<input title='".getTranslatedString('LBL_ADD_NEW'). " ". getTranslatedString($singular_modname) ."' class='crmbutton small create'" .
+				$singular_modname = getTranslatedString('SINGLE_' . $related_module, $related_module);
+				$button .= "<input title='".getTranslatedString('LBL_ADD_NEW'). " ". $singular_modname ."' class='crmbutton small create'" .
 					" onclick='this.form.action.value=\"EditView\";this.form.module.value=\"$related_module\"' type='submit' name='button'" .
-					" value='". getTranslatedString('LBL_ADD_NEW'). " " . getTranslatedString($singular_modname) ."'>&nbsp;";
+					" value='". getTranslatedString('LBL_ADD_NEW'). " " . $singular_modname ."'>&nbsp;";
 			}
 		}
 
@@ -838,7 +782,7 @@ class Products extends CRMEntity {
 
 		$return_value = GetRelatedList($this_module, $related_module, $other, $query, $button, $returnset);
 
-		if($return_value == null) $return_value = Array();
+		if($return_value == null) $return_value = array();
 		$return_value['CUSTOM_BUTTON'] = $button;
 
 		$log->debug("Exiting get_salesorder method ...");
@@ -849,7 +793,7 @@ class Products extends CRMEntity {
 	 *	@param int $id - product id
 	 *	@return array - array which will be returned from the function GetRelatedList
 	 */
-	function get_invoices($id, $cur_tab_id, $rel_tab_id, $actions=false) {
+	public function get_invoices($id, $cur_tab_id, $rel_tab_id, $actions=false) {
 		global $log, $singlepane_view,$currentModule,$current_user;
 		$log->debug("Entering get_invoices(".$id.") method ...");
 		$this_module = $currentModule;
@@ -857,7 +801,6 @@ class Products extends CRMEntity {
 		$related_module = vtlib_getModuleNameById($rel_tab_id);
 		require_once("modules/$related_module/$related_module.php");
 		$other = new $related_module();
-		$singular_modname = vtlib_toSingular($related_module);
 
 		$parenttab = getParentTab();
 
@@ -871,12 +814,13 @@ class Products extends CRMEntity {
 		if($actions) {
 			if(is_string($actions)) $actions = explode(',', strtoupper($actions));
 			if(in_array('SELECT', $actions) && isPermitted($related_module,4, '') == 'yes') {
-				$button .= "<input title='".getTranslatedString('LBL_SELECT')." ". getTranslatedString($related_module). "' class='crmbutton small edit' type='button' onclick=\"return window.open('index.php?module=$related_module&return_module=$currentModule&action=Popup&popuptype=detailview&select=enable&form=EditView&form_submit=false&recordid=$id&parenttab=$parenttab','test','width=640,height=602,resizable=0,scrollbars=0');\" value='". getTranslatedString('LBL_SELECT'). " " . getTranslatedString($related_module) ."'>&nbsp;";
+				$button .= "<input title='".getTranslatedString('LBL_SELECT')." ". getTranslatedString($related_module, $related_module). "' class='crmbutton small edit' type='button' onclick=\"return window.open('index.php?module=$related_module&return_module=$currentModule&action=Popup&popuptype=detailview&select=enable&form=EditView&form_submit=false&recordid=$id&parenttab=$parenttab','test','width=640,height=602,resizable=0,scrollbars=0');\" value='". getTranslatedString('LBL_SELECT'). " " . getTranslatedString($related_module, $related_module) ."'>&nbsp;";
 			}
 			if(in_array('ADD', $actions) && isPermitted($related_module,1, '') == 'yes') {
-				$button .= "<input title='".getTranslatedString('LBL_ADD_NEW'). " ". getTranslatedString($singular_modname) ."' class='crmbutton small create'" .
+				$singular_modname = getTranslatedString('SINGLE_' . $related_module, $related_module);
+				$button .= "<input title='".getTranslatedString('LBL_ADD_NEW'). " ". $singular_modname ."' class='crmbutton small create'" .
 					" onclick='this.form.action.value=\"EditView\";this.form.module.value=\"$related_module\"' type='submit' name='button'" .
-					" value='". getTranslatedString('LBL_ADD_NEW'). " " . getTranslatedString($singular_modname) ."'>&nbsp;";
+					" value='". getTranslatedString('LBL_ADD_NEW'). " " . $singular_modname ."'>&nbsp;";
 			}
 		}
 
@@ -898,7 +842,7 @@ class Products extends CRMEntity {
 
 		$return_value = GetRelatedList($this_module, $related_module, $other, $query, $button, $returnset);
 
-		if($return_value == null) $return_value = Array();
+		if($return_value == null) $return_value = array();
 		$return_value['CUSTOM_BUTTON'] = $button;
 
 		$log->debug("Exiting get_invoices method ...");
@@ -909,8 +853,7 @@ class Products extends CRMEntity {
 	 *	@param int $id - product id
 	 *	@return array - array which will be returned from the function GetRelatedList
 	 */
-	function get_product_pricebooks($id, $cur_tab_id, $rel_tab_id, $actions=false)
-	{
+	public function get_product_pricebooks($id, $cur_tab_id, $rel_tab_id, $actions=false) {
 		global $log,$singlepane_view,$currentModule;
 		$log->debug("Entering get_product_pricebooks(".$id.") method ...");
 
@@ -918,15 +861,14 @@ class Products extends CRMEntity {
 		checkFileAccessForInclusion("modules/$related_module/$related_module.php");
 		require_once("modules/$related_module/$related_module.php");
 		$focus = new $related_module();
-		$singular_modname = vtlib_toSingular($related_module);
 
 		$button = '';
 		if($actions) {
 			if(is_string($actions)) $actions = explode(',', strtoupper($actions));
 			if(in_array('ADD', $actions) && isPermitted($related_module,'CreateView', '') == 'yes' && isPermitted($currentModule,'EditView',$id) == 'yes') {
-				$button .= "<input title='".getTranslatedString('LBL_ADD_TO'). " ". getTranslatedString($related_module) ."' class='crmbutton small create'" .
+				$button .= "<input title='".getTranslatedString('LBL_ADD_TO'). " ". getTranslatedString($related_module,$related_module) ."' class='crmbutton small create'" .
 					" onclick='this.form.action.value=\"AddProductToPriceBooks\";this.form.module.value=\"$currentModule\"' type='submit' name='button'" .
-					" value='". getTranslatedString('LBL_ADD_TO'). " " . getTranslatedString($related_module) ."'>&nbsp;";
+					" value='". getTranslatedString('LBL_ADD_TO'). " " . getTranslatedString($related_module,$related_module) ."'>&nbsp;";
 			}
 		}
 
@@ -951,7 +893,7 @@ class Products extends CRMEntity {
 
 		$return_value = GetRelatedList($currentModule, $related_module, $focus, $query, $button, $returnset);
 
-		if($return_value == null) $return_value = Array();
+		if($return_value == null) $return_value = array();
 		$return_value['CUSTOM_BUTTON'] = $button;
 
 		return $return_value;
@@ -961,8 +903,7 @@ class Products extends CRMEntity {
 	 *	@param int $id - product id
 	 *	@return int number of rows - return the number of products which do not have relationship with vendor
 	 */
-	function product_novendor()
-	{
+	public function product_novendor() {
 		global $log;
 		$log->debug("Entering product_novendor() method ...");
 		$query = "SELECT vtiger_products.productname, vtiger_crmentity.deleted
@@ -981,7 +922,7 @@ class Products extends CRMEntity {
 	* @param  integer   $id      - productid
 	* returns related Products record in array format
 	*/
-	function get_products($id, $cur_tab_id, $rel_tab_id, $actions=false) {
+	public function get_products($id, $cur_tab_id, $rel_tab_id, $actions=false) {
 		global $log, $singlepane_view,$currentModule,$current_user;
 		$log->debug("Entering get_products(".$id.") method ...");
 		$this_module = $currentModule;
@@ -989,7 +930,6 @@ class Products extends CRMEntity {
 		$related_module = vtlib_getModuleNameById($rel_tab_id);
 		require_once("modules/$related_module/$related_module.php");
 		$other = new $related_module();
-		$singular_modname = vtlib_toSingular($related_module);
 
 		$parenttab = getParentTab();
 
@@ -1003,13 +943,14 @@ class Products extends CRMEntity {
 		if($actions && $this->ismember_check() === 0) {
 			if(is_string($actions)) $actions = explode(',', strtoupper($actions));
 			if(in_array('SELECT', $actions) && isPermitted($related_module,4, '') == 'yes') {
-				$button .= "<input title='".getTranslatedString('LBL_SELECT')." ". getTranslatedString($related_module). "' class='crmbutton small edit' type='button' onclick=\"return window.open('index.php?module=$related_module&return_module=$currentModule&action=Popup&popuptype=detailview&select=enable&form=EditView&form_submit=false&recordid=$id&parenttab=$parenttab','test','width=640,height=602,resizable=0,scrollbars=0');\" value='". getTranslatedString('LBL_SELECT'). " " . getTranslatedString($related_module) ."'>&nbsp;";
+				$button .= "<input title='".getTranslatedString('LBL_SELECT')." ". getTranslatedString($related_module, $related_module). "' class='crmbutton small edit' type='button' onclick=\"return window.open('index.php?module=$related_module&return_module=$currentModule&action=Popup&popuptype=detailview&select=enable&form=EditView&form_submit=false&recordid=$id&parenttab=$parenttab','test','width=640,height=602,resizable=0,scrollbars=0');\" value='". getTranslatedString('LBL_SELECT'). " " . getTranslatedString($related_module, $related_module) ."'>&nbsp;";
 			}
 			if(in_array('ADD', $actions) && isPermitted($related_module,1, '') == 'yes') {
-				$button .= "<input type='hidden' name='createmode' id='createmode' value='link' />".
-					"<input title='".getTranslatedString('LBL_ADD_NEW'). " ". getTranslatedString($singular_modname) ."' class='crmbutton small create'" .
+				$singular_modname = getTranslatedString('SINGLE_' . $related_module, $related_module);
+				$button .= "<input type='hidden' name='createmode' value='link' />".
+					"<input title='".getTranslatedString('LBL_ADD_NEW'). " ". $singular_modname ."' class='crmbutton small create'" .
 					" onclick='this.form.action.value=\"EditView\";this.form.module.value=\"$related_module\";' type='submit' name='button'" .
-					" value='". getTranslatedString('LBL_ADD_NEW'). " " . getTranslatedString($singular_modname) ."'>&nbsp;";
+					" value='". getTranslatedString('LBL_ADD_NEW'). " " . $singular_modname ."'>&nbsp;";
 			}
 		}
 
@@ -1027,7 +968,7 @@ class Products extends CRMEntity {
 
 		$return_value = GetRelatedList($this_module, $related_module, $other, $query, $button, $returnset);
 
-		if($return_value == null) $return_value = Array();
+		if($return_value == null) $return_value = array();
 		$return_value['CUSTOM_BUTTON'] = $button;
 
 		$log->debug("Exiting get_products method ...");
@@ -1039,8 +980,7 @@ class Products extends CRMEntity {
 	* @param  integer   $id      - productid
 	* returns related Products record in array format
 	*/
-	function get_parent_products($id)
-	{
+	public function get_parent_products($id) {
 		global $log, $singlepane_view, $app_strings;
 		$log->debug("Entering get_products(".$id.") method ...");
 
@@ -1073,8 +1013,7 @@ class Products extends CRMEntity {
 	 *	@param reference $where - reference of the where variable which will be added with the query
 	 *	@return string $query - return the query which will give the list of products to export
 	 */
-	function create_export_query($where)
-	{
+	public function create_export_query($where) {
 		global $log, $current_user;
 		$log->debug("Entering create_export_query(".$where.") method ...");
 
@@ -1104,7 +1043,7 @@ class Products extends CRMEntity {
 
 	/** Function to check if the product is parent of any other product
 	*/
-	function isparent_check(){
+	public function isparent_check() {
 		global $adb;
 		$isparent_query = $adb->pquery(getListQuery("Products")." AND (vtiger_products.productid IN (SELECT productid from vtiger_seproductsrel WHERE vtiger_seproductsrel.productid = ? AND vtiger_seproductsrel.setype='Products'))",array($this->id));
 		$isparent = $adb->num_rows($isparent_query);
@@ -1113,7 +1052,7 @@ class Products extends CRMEntity {
 
 	/** Function to check if the product is member of other product
 	*/
-	function ismember_check(){
+	public function ismember_check() {
 		global $adb;
 		$SubProductBeParent = GlobalVariable::getVariable('Product_Permit_Subproduct_Be_Parent', 'no');
 		$ismember = 0;
@@ -1130,23 +1069,23 @@ class Products extends CRMEntity {
 	 * @param Array List of Entity Id's from which related records need to be transfered
 	 * @param Integer Id of the the Record to which the related records are to be moved
 	 */
-	function transferRelatedRecords($module, $transferEntityIds, $entityId) {
+	public function transferRelatedRecords($module, $transferEntityIds, $entityId) {
 		global $adb,$log;
 		$log->debug("Entering function transferRelatedRecords ($module, $transferEntityIds, $entityId)");
 
-		$rel_table_arr = Array("HelpDesk"=>"vtiger_troubletickets","Products"=>"vtiger_seproductsrel","Attachments"=>"vtiger_seattachmentsrel",
+		$rel_table_arr = array("HelpDesk"=>"vtiger_troubletickets","Products"=>"vtiger_seproductsrel","Attachments"=>"vtiger_seattachmentsrel",
 				"Quotes"=>"vtiger_inventoryproductrel","PurchaseOrder"=>"vtiger_inventoryproductrel","SalesOrder"=>"vtiger_inventoryproductrel",
 				"Invoice"=>"vtiger_inventoryproductrel","PriceBooks"=>"vtiger_pricebookproductrel","Leads"=>"vtiger_seproductsrel",
 				"Accounts"=>"vtiger_seproductsrel","Potentials"=>"vtiger_seproductsrel","Contacts"=>"vtiger_seproductsrel",
-				"Documents"=>"vtiger_senotesrel");
+				"Documents"=>"vtiger_senotesrel",'Assets'=>'vtiger_assets',);
 
-		$tbl_field_arr = Array("vtiger_troubletickets"=>"ticketid","vtiger_seproductsrel"=>"crmid","vtiger_seattachmentsrel"=>"attachmentsid",
+		$tbl_field_arr = array("vtiger_troubletickets"=>"ticketid","vtiger_seproductsrel"=>"crmid","vtiger_seattachmentsrel"=>"attachmentsid",
 				"vtiger_inventoryproductrel"=>"id","vtiger_pricebookproductrel"=>"pricebookid","vtiger_seproductsrel"=>"crmid",
-				"vtiger_senotesrel"=>"notesid");
+				"vtiger_senotesrel"=>"notesid",'vtiger_assets'=>'assetsid');
 
-		$entity_tbl_field_arr = Array("vtiger_troubletickets"=>"product_id","vtiger_seproductsrel"=>"crmid","vtiger_seattachmentsrel"=>"crmid",
+		$entity_tbl_field_arr = array("vtiger_troubletickets"=>"product_id","vtiger_seproductsrel"=>"crmid","vtiger_seattachmentsrel"=>"crmid",
 				"vtiger_inventoryproductrel"=>"productid","vtiger_pricebookproductrel"=>"productid","vtiger_seproductsrel"=>"productid",
-				"vtiger_senotesrel"=>"crmid");
+				"vtiger_senotesrel"=>"crmid",'vtiger_assets'=>'product');
 
 		foreach($transferEntityIds as $transferId) {
 			foreach($rel_table_arr as $rel_module=>$rel_table) {
@@ -1175,26 +1114,51 @@ class Products extends CRMEntity {
 	 * @param - $secmodule secondary module name
 	 * returns the query string formed on fetching the related data for report for secondary module
 	 */
-	function generateReportsSecQuery($module,$secmodule){
+	public function generateReportsSecQuery($module, $secmodule, $queryplanner, $type = '',$where_condition = '') {
 		global $current_user;
-		$query = $this->getRelationQuery($module,$secmodule,"vtiger_products","productid");
-		$query .= " LEFT JOIN (
+		$matrix = $queryplanner->newDependencyMatrix();
+
+		$matrix->setDependency("vtiger_crmentityProducts",array("vtiger_groupsProducts","vtiger_usersProducts","vtiger_lastModifiedByProducts"));
+
+		if (!$queryplanner->requireTable('vtiger_products', $matrix) && !$queryplanner->requireTable('vtiger_productcf',$matrix)) {
+			return '';
+		}
+		$matrix->setDependency("vtiger_products",array("innerProduct","vtiger_crmentityProducts","vtiger_productcf","vtiger_vendorRelProducts"));
+
+		$query = $this->getRelationQuery($module,$secmodule,"vtiger_products","productid", $queryplanner);
+		if ($queryplanner->requireTable("innerProduct")) {
+			$query .= " LEFT JOIN (
 				SELECT vtiger_products.productid,
-						(CASE WHEN (vtiger_products.currency_id = 1 ) THEN vtiger_products.unit_price
-							ELSE (vtiger_products.unit_price / vtiger_currency_info.conversion_rate) END
-						) AS actual_unit_price
+					(CASE WHEN (vtiger_products.currency_id = 1 ) THEN vtiger_products.unit_price
+						ELSE (vtiger_products.unit_price / vtiger_currency_info.conversion_rate) END
+					) AS actual_unit_price
 				FROM vtiger_products
 				LEFT JOIN vtiger_currency_info ON vtiger_products.currency_id = vtiger_currency_info.id
 				LEFT JOIN vtiger_productcurrencyrel ON vtiger_products.productid = vtiger_productcurrencyrel.productid
 				AND vtiger_productcurrencyrel.currencyid = ". $current_user->currency_id . "
-			) AS innerProduct ON innerProduct.productid = vtiger_products.productid
-			left join vtiger_crmentity as vtiger_crmentityProducts on vtiger_crmentityProducts.crmid=vtiger_products.productid and vtiger_crmentityProducts.deleted=0
-			left join vtiger_productcf on vtiger_products.productid = vtiger_productcf.productid
-			left join vtiger_groups as vtiger_groupsProducts on vtiger_groupsProducts.groupid = vtiger_crmentityProducts.smownerid
-			left join vtiger_users as vtiger_usersProducts on vtiger_usersProducts.id = vtiger_crmentityProducts.smownerid
-			left join vtiger_vendor as vtiger_vendorRelProducts on vtiger_vendorRelProducts.vendorid = vtiger_products.vendor_id
-			left join vtiger_users as vtiger_lastModifiedByProducts on vtiger_lastModifiedByProducts.id = vtiger_crmentityProducts.modifiedby ";
-
+			) AS innerProduct ON innerProduct.productid = vtiger_products.productid";
+		}
+		if ($queryplanner->requireTable("vtiger_crmentityProducts")) {
+			$query .= " left join vtiger_crmentity as vtiger_crmentityProducts on vtiger_crmentityProducts.crmid=vtiger_products.productid and vtiger_crmentityProducts.deleted=0";
+		}
+		if ($queryplanner->requireTable("vtiger_productcf")) {
+			$query .= " left join vtiger_productcf on vtiger_products.productid = vtiger_productcf.productid";
+		}
+			if ($queryplanner->requireTable("vtiger_groupsProducts")) {
+			$query .= " left join vtiger_groups as vtiger_groupsProducts on vtiger_groupsProducts.groupid = vtiger_crmentityProducts.smownerid";
+		}
+		if ($queryplanner->requireTable("vtiger_usersProducts")) {
+			$query .= " left join vtiger_users as vtiger_usersProducts on vtiger_usersProducts.id = vtiger_crmentityProducts.smownerid";
+		}
+		if ($queryplanner->requireTable("vtiger_vendorRelProducts")) {
+			$query .= " left join vtiger_vendor as vtiger_vendorRelProducts on vtiger_vendorRelProducts.vendorid = vtiger_products.vendor_id";
+		}
+		if ($queryplanner->requireTable("vtiger_lastModifiedByProducts")) {
+			$query .= " left join vtiger_users as vtiger_lastModifiedByProducts on vtiger_lastModifiedByProducts.id = vtiger_crmentityProducts.modifiedby ";
+		}
+		if ($queryplanner->requireTable("vtiger_CreatedByProducts")) {
+			$query .= " left join vtiger_users as vtiger_CreatedByProducts on vtiger_CreatedByProducts.id = vtiger_crmentityProducts.smcreatorid ";
+		}
 		return $query;
 	}
 
@@ -1203,7 +1167,7 @@ class Products extends CRMEntity {
 	 * @param - $secmodule secondary module name
 	 * returns the array with table names and fieldnames storing relations between module and this module
 	 */
-	function setRelationTables($secmodule){
+	public function setRelationTables($secmodule) {
 		$rel_tables = array (
 			"HelpDesk" => array("vtiger_troubletickets"=>array("product_id","ticketid"),"vtiger_products"=>"productid"),
 			"Quotes" => array("vtiger_inventoryproductrel"=>array("productid","id"),"vtiger_products"=>"productid"),
@@ -1221,7 +1185,7 @@ class Products extends CRMEntity {
 		return isset($rel_tables[$secmodule]) ? $rel_tables[$secmodule] : '';
 	}
 
-	function deleteProduct2ProductRelation($record,$return_id,$is_parent){
+	public function deleteProduct2ProductRelation($record, $return_id, $is_parent) {
 		global $adb;
 		if($is_parent==0){
 			$sql = "delete from vtiger_seproductsrel WHERE crmid = ? AND productid = ?";
@@ -1233,7 +1197,7 @@ class Products extends CRMEntity {
 	}
 
 	// Function to unlink all the dependent entities of the given Entity by Id
-	function unlinkDependencies($module, $id) {
+	public function unlinkDependencies($module, $id) {
 		global $log;
 		//Backup Campaigns-Product Relation
 		$cmp_q = 'SELECT campaignid FROM vtiger_campaign WHERE product_id = ?';
@@ -1256,7 +1220,7 @@ class Products extends CRMEntity {
 	}
 
 	// Function to unlink an entity with given Id from another entity
-	function unlinkRelationship($id, $return_module, $return_id) {
+	public function unlinkRelationship($id, $return_module, $return_id) {
 		global $log;
 		if(empty($return_module) || empty($return_id)) return;
 
@@ -1269,17 +1233,18 @@ class Products extends CRMEntity {
 		} elseif($return_module == 'Vendors') {
 			$sql = 'UPDATE vtiger_products SET vendor_id = ? WHERE productid = ?';
 			$this->db->pquery($sql, array(null, $id));
+		} elseif($return_module == 'Documents') {
+			$sql = 'DELETE FROM vtiger_senotesrel WHERE crmid=? AND notesid=?';
+			$this->db->pquery($sql, array($id, $return_id));
 		} else {
-			$sql = 'DELETE FROM vtiger_crmentityrel WHERE (crmid=? AND relmodule=? AND relcrmid=?) OR (relcrmid=? AND module=? AND crmid=?)';
-			$params = array($id, $return_module, $return_id, $id, $return_module, $return_id);
-			$this->db->pquery($sql, $params);
+			parent::unlinkRelationship($id, $return_module, $return_id);
 		}
 	}
 
-	function save_related_module($module, $crmid, $with_module, $with_crmids) {
+	public function save_related_module($module, $crmid, $with_module, $with_crmids) {
 		$adb = PearDatabase::getInstance();
 
-		if(!is_array($with_crmids)) $with_crmids = Array($with_crmids);
+		$with_crmids = (array)$with_crmids;
 		foreach($with_crmids as $with_crmid) {
 			if($with_module == 'Leads' || $with_module == 'Accounts' ||
 					$with_module == 'Contacts' || $with_module == 'Potentials' || $with_module == 'Products'){
@@ -1293,6 +1258,5 @@ class Products extends CRMEntity {
 			}
 		}
 	}
-
 }
 ?>

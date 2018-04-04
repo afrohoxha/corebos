@@ -79,7 +79,6 @@ class WorkFlowScheduler {
 		@date_default_timezone_set($default_timezone);
 
 		$scheduledWorkflows = $vtWorflowManager->getScheduledWorkflows($currentTimestamp);
-		$noOfScheduledWorkflows = count($scheduledWorkflows);
 		foreach ($scheduledWorkflows as $workflow) {
 			$tm = new VTTaskManager($adb);
 			$tasks = $tm->getTasksForWorkflow($workflow->id);
@@ -99,7 +98,7 @@ class WorkFlowScheduler {
 					$data = $entityData->getData();
 					foreach ($tasks as $task) {
 						if ($task->active) {
-							$trigger = $task->trigger;
+							$trigger = (empty($task->trigger) ? null : $task->trigger);
 							$wfminutes=$workflow->schminuteinterval;
 							if($wfminutes!=null){
 								$time = time();

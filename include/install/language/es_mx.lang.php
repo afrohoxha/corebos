@@ -12,7 +12,6 @@
 
 $optionalModuleStrings = array(
 	'CustomerPortal_description'=>'Configuración del comportamiento del Portal del Cliente',
-	'FieldFormulas_description'=>'Configuración de Fórmulas de actualización de campos personalizados',
 	'RecycleBin_description'=>'Módulo de control de entidades eliminadas, permite restaurar y eliminar definitivamente',
 	'Tooltip_description'=>'Configuración de referencias de campos que pueden ser una combinación de otros',
 	'Webforms_description'=>'Soporte para webforms. Captura de información externa.',
@@ -41,7 +40,6 @@ $installationStrings = array(
 	'LBL_INSTALL' => 'Instalar',
 	'LBL_MIGRATE' => 'Migrar',
 	'ERR_RESTRICTED_FILE_ACCESS' => 'Lo siento! Intento de acceder a un archivo restringido',
-	'LBL_INSTALLATION_CHECK' => 'Verificación de Instalación',
 	'LBL_BACK' => 'Atrás',
 	'LBL_NEXT' => 'Siguiente',
 	'LBL_AGREE' => 'Acepto',
@@ -71,7 +69,6 @@ $installationStrings = array(
 	'LBL_GD_LIBRARY' => 'Librería gráfica GD',
 	'LBL_RECOMMENDED_PHP_SETTINGS' => 'Configuración Recomendada PHP',
 	'LBL_DIRECTIVE' => 'Directiva',
-	'LBL_RECOMMENDED' => 'Recomendada',
 	'LBL_PHP_INI_VALUE' => 'Valor PHP.ini',
 	'LBL_READ_WRITE_ACCESS' => 'Acceso Lectura/Escritura',
 	'LBL_NOT_RECOMMENDED' => 'No Recomendada',

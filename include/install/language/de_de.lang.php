@@ -10,7 +10,6 @@
 
 $optionalModuleStrings = array(
 	'CustomerPortal_description'=>'Management Interface zur Kontrolle des Kundenportals',
-	'FieldFormulas_description'=>'Definiere Regeln für benutzerdefinierte Felder um die Werte beim Speichern eines Datensatzes zu setzen',
 	'RecycleBin_description'=>'Modul zur Wiederherstellung oder entgültigem Entfernen von gelöschten Datensätzen',
 	'Tooltip_description'=>'Konfiguriere Kurzinfos für ein Feld in Bezug auf andere Felder',
 	'Webforms_description'=>'Server seitige Unterstützung für die Konfiguration von Webforms',
@@ -39,7 +38,6 @@ $installationStrings = array(
 	'LBL_INSTALL' => 'Install',
 	'LBL_MIGRATE' => 'Migrate',
 	'ERR_RESTRICTED_FILE_ACCESS' => 'Sorry! Attempt to access restricted file',
-	'LBL_INSTALLATION_CHECK' => 'Installation Check',
 	'LBL_BACK' => 'Back',
 	'LBL_NEXT' => 'Next',
 	'LBL_AGREE' => 'Agree',
@@ -69,7 +67,6 @@ $installationStrings = array(
 	'LBL_GD_LIBRARY' => 'GD graphics library',
 	'LBL_RECOMMENDED_PHP_SETTINGS' => 'Recommended PHP Settings',
 	'LBL_DIRECTIVE' => 'Directive',
-	'LBL_RECOMMENDED' => 'Recommended',
 	'LBL_PHP_INI_VALUE' => 'PHP.ini value',
 	'LBL_READ_WRITE_ACCESS' => 'Read/Write Access',
 	'LBL_NOT_RECOMMENDED' => 'Not Recommended',

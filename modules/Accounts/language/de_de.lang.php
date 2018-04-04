@@ -8,7 +8,7 @@
  * All Rights Reserved.
  ************************************************************************************/
 
-$mod_strings = Array(
+$mod_strings = array(
     'LBL_MODULE_NAME'=>'Organisationen',
     'LBL_MODULE_TITLE'=>'Organisationen: Home',
     'LBL_SEARCH_FORM_TITLE'=>'suche Organisation',
@@ -26,14 +26,6 @@ $mod_strings = Array(
     'LBL_LIST_EMAIL_ADDRESS'=>'E-Mail Adresse',
     'LBL_LIST_CONTACT_NAME'=>'Personenname',
     'LBL_LIST_AMOUNT' => 'Total Potentiale',
-
-    //DON'T CONVERT THESE THEY ARE MAPPINGS
-    'db_name' => 'LBL_LIST_ACCOUNT_NAME',
-    'db_website' => 'LBL_LIST_WEBSITE',
-    'db_billing_address_city' => 'LBL_LIST_CITY',
-
-    //END DON'T CONVERT
-
     'LBL_ACCOUNT'=>'Organisation:',
     'LBL_ACCOUNT_NAME'=>'Organisation:',
     'LBL_PHONE'=>'Telefon:',
@@ -215,15 +207,21 @@ $mod_strings = Array(
     'LBL_MAILER_EXPORT_CHECKED' =>'markiert',
     'LBL_MAILER_EXPORT_NOTCHECKED' => 'nicht markiert',
 
-    // Added after 5.0.4 GA
-
     //Module Sequence Numbering
     'Account No'=>'Organisationsnr.',
-    // END
 
     // Account Hierarchy
     'LBL_SHOW_ACCOUNT_HIERARCHY' => 'Zeige Organisationshierarchie', 
     'Accounts ID' => 'Organisations ID',
+	'LBL_ONDEMAND_CONTROL_INFORMATION' => 'On Demand Control',
+	'Start Date OD' => 'On Demand Start',
+	'End Date OD' => 'On Demand End',
+	'OD Service Active' => 'On Demand Active',
+	'OD Sync Module Active' => 'On Demand Sync Active',
+	'OD Sync Modules' => 'On Demand Sync Modules',
+	'Invoice With Tax' => 'Invoice With Tax',
+	'Free Space' => 'Free Space',
+	'Space Consumed' => 'Space Consumed',
+	'Frequency' => 'Invoice Frequency',
 );
-
 ?>
